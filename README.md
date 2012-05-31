@@ -1,4 +1,3 @@
-js-aux-lib
-==========
-
 A JavaScript auxiliary library
+
+License: GPLv3 (see LICENSE).
