@@ -27,9 +27,14 @@ Alib.Str = new function () {
         return string.substring(0, id) + newString + string.substr(id);
     };
     
-    this.overwriteAt = function (string, newString, id) {
+    this.overwriteFor = function (string, newString, id, length) {
         if (!id) id = 0;
-        return string.substring(0, id) + newString + string.substr(id + newString.length);
+        if (!length || length < 0) length = 0;
+        return string.substring(0, id) + newString + string.substr(id + length);
+    };
+    
+    this.overwriteAt = function (string, newString, id) {
+        return this.overwriteFor(string, newString, id, newString.length);
     };
     
     this.overwriteBetween = function (string, newString, id1, id2) {
@@ -43,18 +48,12 @@ Alib.Str = new function () {
         return string.substring(0, id1) + newString + string.substr(id2);
     };
     
-    this.overwriteFor = function (string, newString, id, length) {
-        if (!id) id = 0;
-        if (!length || length < 0) length = 0;
-        return string.substring(0, id) + newString + string.substr(id + length);
+    this.removeFor = function (string, id, length) {
+        return this.overwriteFor(string, "", id, length);
     };
     
     this.removeBetween = function (string, id1, id2) {
         return this.overwriteBetween(string, "", id1, id2);
-    };
-    
-    this.removeFor = function (string, id, length) {
-        return this.overwriteFor(string, "", id, length);
     };
     
     this.padLeft = function (string, filler, length) {
