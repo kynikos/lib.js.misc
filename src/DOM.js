@@ -22,6 +22,43 @@
 if (!Alib) var Alib = {};
 
 Alib.DOM = new function () {
+    this.getChildrenByTagName = function (element, tag) {
+        var list = element.childNodes;
+        var children = [];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].localName.toLowerCase() == tag.toLowerCase()) { 
+                children.push(list[i]);
+            }
+        }
+        return children;
+    }
+    
+    this.isDescendantOf = function (descendant, ancestor, identity) {
+        var response = false;
+        if (identity && descendant.isSameNode(ancestor)) {
+            response = true;
+        }
+        else {
+            while (descendant != document.body) {
+                if (descendant.parentNode.isSameNode(ancestor)) {
+                    response = true;
+                    break;
+                }
+                descendant = descendant.parentNode;
+            }
+        }
+        return response;
+    }
+    
+    this.getSiblingPositionByTagName = function (element) {
+        var i = 0;
+    	var siblings = this.getChildrenByTagName(element.parentNode, element.localName);
+        while (!siblings[i].isSameNode(element)) {
+            i++;
+        }
+        return (i < siblings.length) ? i : -1;
+    }
+    
     this.getLongTextNode = function (element) {
         // Firefox and other browsers split long text into multiple text nodes
         var text = "";

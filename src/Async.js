@@ -22,6 +22,17 @@
 if (!Alib) var Alib = {};
 
 Alib.Async = new function () {
+    this.executeAsync = function (functions, id) {
+        id++;
+        if (functions[id]) {
+            var fid = functions[id];
+            var callContinue = function () {
+                Alib.Async.executeAsync(functions, id);
+            };
+            fid[0](fid[1], callContinue);
+        }
+    };
+    
     this.recurseTreeAsync = function (params) {
         /*
          * params = {
