@@ -1,6 +1,6 @@
 /*
  *  JavaScript auxiliary library
- *  Copyright (C) 2012 Dario Giovannetti <dev@dariogiovannetti.net>
+ *  Copyright (C) 2012-2013 Dario Giovannetti <dev@dariogiovannetti.net>
  * 
  *  This file is part of JavaScript auxiliary library.
  * 
