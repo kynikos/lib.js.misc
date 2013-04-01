@@ -26,7 +26,8 @@ Alib.DOM = new function () {
         var list = element.childNodes;
         var children = [];
         for (var i = 0; i < list.length; i++) {
-            if (list[i].localName.toLowerCase() == tag.toLowerCase()) { 
+            var localName = list[i].localName;
+            if (localName && localName.toLowerCase() == tag.toLowerCase()) { 
                 children.push(list[i]);
             }
         }
