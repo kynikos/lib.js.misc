@@ -22,31 +22,34 @@
 if (!Alib) var Alib = {};
 
 Alib.HTTP = new function () {
-    var queryString = (function () {
-        var qa = location.search.substr(1).split('&');
-        var qd = new Object();
-        var s = new Array();
-        for (var p in qa) {
-            s = qa[p].split('=');
-            qd[s[0]] = s[1];
-        }
-        return qd;
-    })();
-
-    this.getURIParameter = function (name) {
-        return queryString[name];
+    this.getUrlLocation = function (url) {
+        link = document.createElement('a');
+        link.href = url;
+        return link;
     };
 
-    this.getURLParts = function (url) {
-        var re = /^(.+?\:\/\/)([^\/]+)(.+?)(\#.+?)?(\?.+)$/i;
-        var match = re.match(url);
-        return {
-            protocol: match[1],
-            hostname: match[2],
-            path: match[3],
-            fragment: match[4],
-            query: match[5],
-        };
+    this.getURIParameters = function (uri) {
+        if (uri) {
+            var qstring = this.getUrlLocation(uri).search;
+        }
+        else {
+            var qstring = location.search;
+        }
+
+        var qarray = qstring.substr(1).split('&');
+        var qdict = new Object();
+        var s = new Array();
+
+        for (var par in qarray) {
+            s = qarray[par].split('=');
+            qdict[s[0]] = s[1];
+        }
+
+        return qdict;
+    };
+
+    this.getURIParameter = function (uri, name) {
+        return this.getURIParameters(uri)[name];
     };
 
     this.sendGetAsyncRequest = function (url, call) {
