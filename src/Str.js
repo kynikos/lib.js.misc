@@ -70,4 +70,51 @@ Alib.Str = new function () {
         }
         return string;
     };
+
+    this.findSimpleEnclosures = function (string, openTag, openLength,
+                                                    closeTag, closeLength) {
+        // openTag and closeTag can be strings or regular expressions
+        // If the string is "<<>>" and the tags are "<" and ">", the result is
+        //   [[0, 2], ]
+        // Results are guaranteed to be in order of appearance in the original
+        //   text
+        var results = [];
+        var searchIndex = 0;
+        var oIndexRel = string.search(openTag);
+
+        while (true) {
+            if (oIndexRel > -1) {
+                var oIndex = searchIndex + oIndexRel;
+                var cIndexRel = string.substr(oIndex + openLength).search(
+                                                                    closeTag);
+
+                if (cIndexRel > -1) {
+                    var cIndex = oIndex + openLength + cIndexRel;
+                    results.push([oIndex, cIndex]);
+                    searchIndex = cIndex + closeLength;
+
+                    if (searchIndex < string.length) {
+                        oIndexRel = string.substr(searchIndex).search(openTag);
+                        continue;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    // A tag is left open (no closing tag is found)
+                    // Let each implementation decide what to do in this case
+                    //   (either consider the tag working until the end of text
+                    //   or not)
+                    results.push([oIndex, false]);
+                    break;
+                }
+            }
+            else {
+                break;
+            }
+        }
+
+        return results;
+    };
 };
