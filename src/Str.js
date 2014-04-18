@@ -171,4 +171,38 @@ Alib.Str = new function () {
 
         return [results, maskedString];
     };
+
+    this.findInnermostEnclosures = function (string, openTag, closeTag) {
+        // openTag and closeTag must be strings, *not* regular expressions,
+        //   unlike this.findSimpleEnclosures
+        // If the string is "<<>>" and the tags are "<" and ">", the result is
+        //   [[1, 2], ]
+        var openLength = openTag.length;
+        var closeLength = closeTag.length;
+        var results = [];
+        var searchIndex = 0;
+
+        while (true) {
+            var cIndexRel = string.substring(searchIndex).indexOf(closeTag);
+
+            if (cIndexRel > -1) {
+                var cIndex = searchIndex + cIndexRel;
+                var oIndexRel = string.substring(searchIndex, cIndex
+                                                        ).lastIndexOf(openTag);
+
+                if (oIndexRel > -1) {
+                    var oIndex = searchIndex + oIndexRel;
+                    results.push([oIndex, cIndex]);
+                }
+
+                searchIndex = cIndex + closeLength;
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+
+        return results;
+    };
 };
