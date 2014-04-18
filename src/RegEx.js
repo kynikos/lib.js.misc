@@ -54,4 +54,21 @@ Alib.RegEx = new function () {
         }
         return result;
     };
+
+    this.matchAllConditional = function (source, regExp, test) {
+        var result = [];
+        while (true) {
+            var match = regExp.exec(source);
+            if (match && test(match)) {
+                var L = match[0].length;
+                result.push({"match": match,
+                             "index": regExp.lastIndex - L,
+                             "length": L});
+            }
+            else {
+                break;
+            }
+        }
+        return result;
+    };
 };
