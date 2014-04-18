@@ -117,4 +117,58 @@ Alib.Str = new function () {
 
         return results;
     };
+
+    this.findNestedEnclosures = function (string, openTag, closeTag,
+                                                                    maskChar) {
+        // openTag and closeTag must be strings, *not* regular expressions,
+        //   unlike this.findSimpleEnclosures
+        // maskChar must be a *1*-character string and must *not* be part of
+        //   neither openTag nor closeTag
+        // If the string is "<<>>" and the tags are "<" and ">", the result is
+        //   [[1, 2], [0, 3]]
+        var openLength = openTag.length;
+        var closeLength = closeTag.length;
+        var results = [];
+        var searchIndex = 0;
+        var cIndexRel = string.indexOf(closeTag);
+        var maskedString = string;
+
+        while (true) {
+            if (cIndexRel > -1) {
+                var cIndex = searchIndex + cIndexRel;
+                var oIndexRel = maskedString.substring(searchIndex, cIndex
+                                                        ).lastIndexOf(openTag);
+
+                if (oIndexRel > -1) {
+                    var oIndex = searchIndex + oIndexRel;
+                    results.push([oIndex, cIndex]);
+
+                    var maskedString1 = maskedString.substring(0, oIndex);
+                    var maskLength = cIndex - oIndex + closeLength;
+                    var maskedString2 = this.padRight("", maskChar,
+                                                                maskLength);
+                    var maskedString3 = maskedString.substring(cIndex +
+                                                                closeLength);
+                    maskedString = maskedString1 + maskedString2 +
+                                                                maskedString3;
+
+                    // Do *not* increment searchIndex in this case, in fact in
+                    //   we don't know yet whether there are more openTags
+                    //   before the one found
+                }
+                else {
+                    searchIndex = cIndex + closeLength;
+                }
+
+                cIndexRel = maskedString.substring(searchIndex).indexOf(
+                                                                    closeTag);
+                continue;
+            }
+            else {
+                break;
+            }
+        }
+
+        return [results, maskedString];
+    };
 };
