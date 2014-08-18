@@ -1,19 +1,19 @@
 /*
  *  JavaScript auxiliary library
- *  Copyright (C) 2012-2013 Dario Giovannetti <dev@dariogiovannetti.net>
- * 
+ *  Copyright (C) 2012-2014 Dario Giovannetti <dev@dariogiovannetti.net>
+ *
  *  This file is part of JavaScript auxiliary library.
- * 
+ *
  *  JavaScript auxiliary library is free software: you can redistribute it
  *  and/or modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation, either version 3
  *  of the License, or (at your option) any later version.
- * 
+ *
  *  JavaScript auxiliary library is distributed in the hope that it will be
  *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with JavaScript auxiliary library.
  *  If not, see <http://www.gnu.org/licenses/>.
@@ -22,16 +22,16 @@
 if (!GM_setValue || !GM_getValue || !GM_listValues || !GM_deleteValue) {
     var setWikiMonkeyGmApiEmulationCookie = function (value) {
         var name = "WikiMonkeyGmApiValuesEmulation";
-        
+
         var expireDate = new Date();
         expireDate.setTime(expireDate.getTime() + (3110400000));  // 36 days
         var expires = ";expires=" + expireDate.toUTCString();
-        
+
         var path = ";path=/";
-        
+
         document.cookie = name + "=" + escape(value) + expires + path;
     };
-    
+
     var getWikiMonkeyGmApiEmulationCookie = function () {
         if (document.cookie.length > 0) {
             var cookieArray = document.cookie.split(';');
@@ -109,7 +109,7 @@ if (!GM_xmlhttpRequest) {
          *     onload: ,
          *     onerror: ,
          *     onreadystatechange: ,
-         * 
+         *
          *     // Not yet implemented
          *     //binary: ,
          *     //mozBackgroundRequest: ,
@@ -131,15 +131,15 @@ if (!GM_xmlhttpRequest) {
         if (!params.onerror) params.onerror = function (req) {};
         if (!params.onreadystatechange) params.onreadystatechange = function (req) {};
         params.async = true;
-        
+
         var req = new XMLHttpRequest();
-        
+
         req.open(params.method, params.url, params.async, params.user, params.password);
-        
+
         for (var header in params.headers) {
             req.setRequestHeader(header, params.headers[header]);
         }
-        
+
         req.onreadystatechange = function () {
             var response = {
                 responseText: req.responseText,
@@ -150,16 +150,16 @@ if (!GM_xmlhttpRequest) {
                 // Not yet implemented
                 //finalUrl: ,
             };
-            
+
             try {
                 response.responseJSON = JSON.parse(req.responseText);
             }
             catch (err) {
                 response.responseJSON = undefined;
             }
-            
+
             params.onreadystatechange(response);
-            
+
             if (req.readyState == 4) {
                 if (req.status == 200) {
                     params.onload(response);
@@ -169,9 +169,9 @@ if (!GM_xmlhttpRequest) {
                 }
             }
         };
-        
+
         req.send(params.data);
-        
+
         return {
             abort: function () {
                 req.abort();
