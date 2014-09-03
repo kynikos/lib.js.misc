@@ -19,16 +19,6 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (!GM_addStyle) {
-    var GM_addStyle = function (css) {
-        var head = document.getElementsByTagName('head')[0];
-        var style = document.createElement('style');
-        style.setAttribute('type', 'text/css');
-        style.innerHTML = css;
-        head.appendChild(style);
-    };
-}
-
 if (!GM_xmlhttpRequest) {
     var GM_xmlhttpRequest = function (params) {
         /* This function emulates GM_xmlhttpRequest only partially
