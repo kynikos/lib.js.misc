@@ -24,14 +24,14 @@ if (!Alib) var Alib = {};
 Alib.DOM = new function () {
     this.getPreviousElementSibling = function (node) {
         while (node.previousSibling.nodeType != 1) {
-            var node = node.previousSibling;
+            node = node.previousSibling;
         }
         return node.previousSibling;
     }
 
     this.getNextElementSibling = function (node) {
         while (node.nextSibling.nodeType != 1) {
-            var node = node.nextSibling;
+            node = node.nextSibling;
         }
         return node.nextSibling;
     }
