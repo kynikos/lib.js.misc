@@ -227,6 +227,9 @@ Alib.ImageUploader = new function () {
         var url = config.copies[cId].processUrl;
         var call = function(res, args) {
             updateStatus(iId, cId, res);
+            if (counter == total) {
+                config.callBack();
+            }
         };
 
         requestPost({'destPath': destPath}, blobs, url, call, []);
@@ -247,6 +250,7 @@ Alib.ImageUploader = new function () {
         'uploadButton': null,  // Must be overridden
         'statusMessage': null,  // Must be overridden
         'statusList': null,  // Must be overridden
+        'callBack': function () {},
         'copies': [
             {
                 'processUrl': null,  // Must be overridden
