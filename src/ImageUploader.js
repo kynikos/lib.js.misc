@@ -54,13 +54,15 @@ Alib.ImageUploader = new function () {
             req.setRequestHeader(header, params.headers[header]);
         }
 
-        // http://www.matlus.com/html5-file-upload-with-progress/  ******************************
-        // http://html5doctor.com/the-progress-element/  ****************************************
-        // http://www.geekthis.net/blog/38/html5-uploading-with-progress-bar  *******************
-        req.upload.onprogress = function(e) {  // ***********************************************
+        // TODO:
+        //   http://www.matlus.com/html5-file-upload-with-progress/
+        //   http://html5doctor.com/the-progress-element/
+        //   http://www.geekthis.net/blog/38/html5-uploading-with-progress-bar
+        req.upload.onprogress = function(e) {
             if (e.lengthComputable) {
                 var percentComplete = (e.loaded / e.total) * 100;
-                //console.log(percentComplete + '% uploaded'); // *******************************
+                // TODO: log
+                //console.log(percentComplete + '% uploaded');
             }
         };
 
