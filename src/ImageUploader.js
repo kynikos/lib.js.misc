@@ -219,7 +219,7 @@ Alib.ImageUploader = new function () {
             destPath += '/';
         }
 
-        var fName = destPath + config.copies[cId].prefix + name;
+        var fName = config.copies[cId].prefix + name;
 
         var blobs = [
             ['image', blob, fName],
@@ -229,7 +229,7 @@ Alib.ImageUploader = new function () {
             updateStatus(iId, cId, res);
         };
 
-        requestPost({}, blobs, url, call, []);
+        requestPost({'destPath': destPath}, blobs, url, call, []);
     };
 
     var updateStatus = function(iId, cId, res) {
