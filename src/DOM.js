@@ -106,4 +106,18 @@ Alib.DOM = new function () {
         }
         return text;
     };
+
+    this.waitUntilJQuerySelectorMatches = function (selector, handler, args,
+                                                    interval) {
+        //TODO: turn into a jQuery plugin
+        var recurse = function () {
+            if ($(selector)[0]) {
+                handler(args);
+            }
+            else {
+                setTimeout(recurse, interval);
+            }
+        };
+        recurse();
+    };
 };
