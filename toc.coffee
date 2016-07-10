@@ -59,11 +59,7 @@ class module.exports.TableOfContents
 
 
 class EnhancedHeading
-    self = null
-
     constructor: (@section) ->
-        self = this
-
         header = @section.find(':header').first()
         header.wrap(
             $('<div>')
