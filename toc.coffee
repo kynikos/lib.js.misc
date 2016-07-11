@@ -101,7 +101,7 @@ class EnhancedHeading
         $(this).children('span.actions').hide()
 
     collapse_section = (event) ->
-        $(this).parents('div.section-start').first().nextAll().hide()
+        $(this).closest('div.section-start').nextAll().hide()
         $(this)
             .text('expand')
             .off('click', collapse_section)
@@ -109,7 +109,7 @@ class EnhancedHeading
         return false
 
     expand_section = (event) ->
-        $(this).parents('div.section-start').first().nextAll().show()
+        $(this).closest('div.section-start').nextAll().show()
         $(this)
             .text('collapse')
             .off('click', expand_section)

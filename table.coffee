@@ -24,7 +24,7 @@ class TableSettings
         self = this
 
         showSettings = (event) ->
-            settings = $(this).parents('div.settings').first()
+            settings = $(this).closest('div.settings')
             form = settings.children('form')
             if form.length
                 form.show()
@@ -60,7 +60,7 @@ class TableSettings
             # have to be reinitialized to a checked/unchecked status based on
             # the visibility of each field every time the settings are shown
             # again
-            $(this).parents('div.settings').first().children('form').hide()
+            $(this).closest('div.settings').children('form').hide()
             $(this)
                 .off('click', hideSettings)
                 .on('click', showSettings)
