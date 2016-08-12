@@ -32,8 +32,7 @@ $.fn.exportToFile = (filename, text) ->
         $(this)
             .attr("href", window.URL.createObjectURL(blob))
             .attr('download', filename)
-            # Don't just use $(this).click(), or the click event on the
-            # 'a' element will be called over in an infinite loop
-            [0].click()
+            # This is supposed to be called from a click event, so don't run
+            # .get(0).click() here
         return $(this)
     )
