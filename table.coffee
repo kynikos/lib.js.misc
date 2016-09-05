@@ -105,6 +105,18 @@ $.fn.addTableSettings = ->
     )
 
 
+$.fn.prependTableDataRows = (rows...) ->
+    @each( ->
+        # TODO: Check if this is a table, thead, tbody or tfoot?
+        for row in rows
+            tr = $('<tr>')
+            for cell in row
+                tr.append($('<td>').append(cell))
+            $(this).prepend(tr)
+        return $(this)
+    )
+
+
 $.fn.appendTableDataRows = (rows...) ->
     @each( ->
         # TODO: Check if this is a table, thead, tbody or tfoot?
