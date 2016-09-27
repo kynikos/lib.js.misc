@@ -19,7 +19,7 @@
 
 
 if not GM_xmlhttpRequest?
-    GM_xmlhttpRequest = ->
+    window.GM_xmlhttpRequest = ->
         # This function emulates GM_xmlhttpRequest only partially
         # Notably cross-origin requests are not supported
         #
