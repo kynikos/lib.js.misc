@@ -40,7 +40,8 @@ class module.exports.TableOfContents
                 if currul.children().length > 0 and hlevel > currhlevel
                     currul = $('<ul>').appendTo(currul)
                 else if hlevel < currhlevel
-                    currul = currul.parent()
+                    for N in [0...(currhlevel - hlevel)]
+                        currul = currul.parent()
                 currhlevel = hlevel
 
                 link = $('<a>')
