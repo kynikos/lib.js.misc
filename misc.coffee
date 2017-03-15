@@ -19,9 +19,19 @@
 $ = require('jquery')
 
 
-$.fn.appendText = (text) ->
+
+# Open links in the same window when using "apple-mobile-web-app-capable"
+$.fn.standaloneAppLinks = ->
     @each( ->
-        $(this).append(document.createTextNode(text))
+        $(this).find('a').each( ->
+            href = $(this).attr('href')
+            if href isnt '' and href[0] isnt '#'
+                $(this).on('click', (event) ->
+                    event.preventDefault()
+                    window.location.href = $(event.currentTarget).attr('href')
+                    return false
+                )
+        )
         return $(this)
     )
 
