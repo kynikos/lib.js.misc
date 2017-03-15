@@ -25,7 +25,9 @@ misc = require('./misc')
 $.widget("ui.tabulator", $.ui.tabulator,
     options: {}
     sorters: {}
-    formatters: {}
+    formatters:
+        select: (value, data, cell, row, options) ->
+            return cell.attr('data-text')
 
     editors:
         date: (cell, value) ->
@@ -125,11 +127,13 @@ class module.exports.Tabulator
                 , 100)
 
             select.on("blur", (event) ->
+                cell.attr('data-text', select.find(':selected').text())
                 cell.trigger("editval", select.val())
             )
 
             select.on("keydown", (event) ->
                 if event.keyCode == 13
+                    cell.attr('data-text', select.find(':selected').text())
                     cell.trigger("editval", select.val())
             )
 
