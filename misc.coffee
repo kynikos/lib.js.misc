@@ -17,7 +17,10 @@
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
 $ = require('jquery')
+require("jquery-ui-browserify")
 
+WEEKDAYS_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+module.exports.WEEKDAYS_SHORT = WEEKDAYS_SHORT
 
 
 # Open links in the same window when using "apple-mobile-web-app-capable"
@@ -88,3 +91,71 @@ module.exports.dataURLtoBlob = (dataurl) ->
     while n--
         u8arr[n] = bstr.charCodeAt(n)
     return new Blob([u8arr], {type: mime})
+
+
+class module.exports.DatePicker
+    constructor: ->
+        @display = $('<input>')
+            .attr(
+                'type': 'text'
+                'readonly': 'true'
+                'size': 30
+                'placeholder': 'Select a date'
+            )
+            .addClass('datepicker-display')
+            .click( =>
+                @input.datepicker('show')
+            )
+        @input = $('<input>')
+            .attr('type', 'hidden')
+            .datepicker(
+                dateFormat: 'yy-mm-dd'
+                altField: @display
+                altFormat: "DD, d MM yy"
+                firstDay: 1
+            )
+
+    set_date: (date) ->
+        dpdate = $.datepicker.parseDate('yy-mm-dd', date)
+        @input.datepicker("setDate", dpdate)
+
+    get_date: ->
+        return @input.val()
+
+    enable: ->
+        @display.removeAttr('disabled')
+
+    disable: ->
+        @input.datepicker("setDate", null)
+        @display.attr('disabled', 'true')
+
+
+class module.exports.WeekDaySelector
+    constructor:  (selected_days, baseid, radio=false) ->
+        @container = $('<span>').addClass('weekdayselector')
+        for wday, index in WEEKDAYS_SHORT
+            id = "#{baseid}-#{index}"
+            name = "#{baseid}"
+            input = $('<input>')
+                .attr(
+                    'type': if radio then 'radio' else 'checkbox'
+                    'name': name
+                    'id': id
+                )
+                .val(index)
+                .appendTo(@container)
+
+            if selected_days.indexOf(index) > -1
+                input.prop("checked", true)
+
+            $('<label>')
+                .attr('for', id)
+                .text(wday)
+                .appendTo(@container)
+
+    get_days: ->
+        days = []
+        for input in @container.children('input')
+            if input.checked
+                days.push(input.value)
+        return days
