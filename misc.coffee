@@ -116,8 +116,9 @@ class module.exports.DatePicker
             )
 
     set_date: (date) ->
-        dpdate = $.datepicker.parseDate('yy-mm-dd', date)
-        @input.datepicker("setDate", dpdate)
+        if typeof date is 'string'
+            date = $.datepicker.parseDate('yy-mm-dd', date)
+        @input.datepicker("setDate", date)
 
     get_date: ->
         return @input.val()
