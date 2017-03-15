@@ -46,3 +46,12 @@ $.fn.exportToFile = (filename, text) ->
             # .get(0).click() here
         return $(this)
     )
+
+
+module.exports.getQueryParameters = ->
+    params = {}
+    query = window.location.search.substring(1)
+    for pair in query.split('&')
+        [name, value...] = pair.split("=")
+        params[name] = value.join('=')
+    return params
