@@ -27,7 +27,7 @@ $.widget("ui.tabulator", $.ui.tabulator,
     sorters: {}
     formatters:
         select: (value, data, cell, row, options) ->
-            return cell.attr('data-text')
+            return data["#{cell.attr('data-field')}_tabulatorcelltext"]
 
     editors:
         date: (cell, value) ->
@@ -133,13 +133,15 @@ class module.exports.Tabulator
                 , 100)
 
             select.on("blur", (event) ->
-                cell.attr('data-text', select.find(':selected').text())
+                data["#{cell.attr('data-field')}_tabulatorcelltext"] = \
+                                                select.find(':selected').text()
                 cell.trigger("editval", select.val())
             )
 
             select.on("keydown", (event) ->
                 if event.keyCode == 13
-                    cell.attr('data-text', select.find(':selected').text())
+                    data["#{cell.attr('data-field')}_tabulatorcelltext"] = \
+                                                select.find(':selected').text()
                     cell.trigger("editval", select.val())
             )
 
