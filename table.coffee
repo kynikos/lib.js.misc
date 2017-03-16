@@ -35,7 +35,7 @@ $.widget("ui.tabulator", $.ui.tabulator,
 
             if cell.hasClass("tabulator-cell")
                 setTimeout( ->
-                    datepicker.input.focus()
+                    datepicker.show()
                 , 100)
 
             datepicker.input.change( ->
@@ -70,7 +70,12 @@ $.widget("ui.tabulator", $.ui.tabulator,
             return input
 
     mutators: {}
-    accessors: {}
+    accessors:
+        integer: (value, data) ->
+            return parseInt(value, 10)
+
+        float: (value, data) ->
+            return parseFloat(value)
 )
 
 
@@ -123,6 +128,7 @@ class module.exports.Tabulator
 
             if cell.hasClass("tabulator-cell")
                 setTimeout( ->
+                    # TODO: Find a way to open the select (~ trigger a click)
                     select.focus()
                 , 100)
 

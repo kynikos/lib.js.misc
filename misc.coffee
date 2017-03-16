@@ -115,6 +115,12 @@ class module.exports.DatePicker
                 firstDay: 1
             )
 
+    show: ->
+        @input.datepicker('show')
+
+    hide: ->
+        @input.datepicker('hide')
+
     set_date: (date) ->
         if typeof date is 'string'
             date = $.datepicker.parseDate('yy-mm-dd', date)
