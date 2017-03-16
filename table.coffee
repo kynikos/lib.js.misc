@@ -89,8 +89,13 @@ class module.exports.Tabulator
             else
                 @show_message('No data')
 
+        if @config.show_controls? and @config.show_controls is false
+            @controls = null
+        else
+            @controls = $('<div class="tabulator-controls">').hide()
+
         @widget = $('<div class="tabulator-container">').append(
-            @controls = $('<div class="tabulator-controls">').hide(),
+            @controls,
             @message = $('<p>').hide(),
             @loader = if @config.loader? then @config.loader \
                       else $('<p>Loading...</p>'),
@@ -102,10 +107,33 @@ class module.exports.Tabulator
         else
             @set_uneditable()
 
-        if @config.onclose?
-            @on_close = @config.onclose
+        @config.add_row_label ?= "Add row"
+
+        if @config.onsaving?
+            @on_saving = @config.onsaving
         else
-            @on_close = @set_uneditable
+            @on_saving = ->
+                return true
+
+        if @config.onsaved?
+            @on_saved = @config.onsaved
+        else
+            @on_saved = =>
+                @set_uneditable()
+                return true
+
+        if @config.oncancelling?
+            @on_cancelling = @config.oncancelling
+        else
+            @on_cancelling = =>
+                @set_uneditable()
+                return true
+
+        if @config.oncancelled?
+            @on_cancelled = @config.oncancelled
+        else
+            @on_cancelled = ->
+                return true
 
     @make_select_editor: (options, val, text) =>
         return (cell, value, data) =>
@@ -115,9 +143,13 @@ class module.exports.Tabulator
                 .append( =>
                     opts = []
                     for opt in options
+                        if typeof text is 'function'
+                            opttext = text(opt)
+                        else
+                            opttext = opt[text]
                         opts.push($('<option>')
                             .val(opt[val])
-                            .text(opt[text])
+                            .text(opttext)
                         )
                     return opts
                 )
@@ -147,21 +179,41 @@ class module.exports.Tabulator
 
             return select
 
+    reconfigure: (config) =>
+        @tabulator_config = config
+        @tabulator.tabulator(@tabulator_config)
+
+    get_data: =>
+        return @tabulator.tabulator("getData")
+
+    set_data: (data) =>
+        @tabulator.tabulator("setData", data)
+
+    refresh_data: =>
+        @tabulator.tabulator('setData', @tabulator_config.ajaxURL,
+                             @tabulator_config.ajaxParams)
+
+    show: =>
+        @widget.show()
+
+    hide: =>
+        @widget.hide()
+
     show_loader: =>
-        @controls.hide()
+        @controls?.hide()
         @message.hide()
         @tabulator.hide()
         @loader.show()
 
     show_table: =>
         @loader.hide()
-        @controls.show()
+        @controls?.show()
         @message.hide()
         @tabulator.show()
 
     show_message: (message) =>
         @loader.hide()
-        @controls.show()
+        @controls?.show()
         @tabulator.hide()
         @message.text(message).show()
 
@@ -174,78 +226,20 @@ class module.exports.Tabulator
             if def.editor_inhibited?
                 def.editor = def.editor_inhibited
         @tabulator.tabulator("setColumns", col_defs, false)
-        @controls
-            .empty()
-            .append(
-                $('<a href="#">Save</a>').click( =>
-                    @show_loader()
-                    $.post(
-                        url: '/api/'
-                        data:
-                            action: @config.api_submit_action
-                            data: JSON.stringify(@tabulator
-                                                        .tabulator("getData"))
-                        success: (data, textStatus, jqXHR) =>
-                            if data != 'success'
-                                alert("""
-                                      Error while saving the data.
-
-                                      Check the validity of the input values.
-                                      """)
-                                @show_table()
-                            else
-                                @on_close()
-                                # Reload the data, since the submitted array
-                                # doesn't have the new entity keys that have
-                                # been created
-                                # Delay the refresh a little to give the time
-                                # to the datastore to update the entities
-                                window.setTimeout( =>
-                                        # TODO: setData should work also
-                                        #       without parameters, but it
-                                        #       doesn't (report bug)
-                                        # @tabulator.tabulator("setData")
-                                        @tabulator.tabulator(
-                                            "setData",
-                                            @tabulator_config.ajaxURL,
-                                            @tabulator_config.ajaxParams
-                                        )
-                                    , 1000)
-                        error: (jqXHR, textStatus, errorThrown) =>
-                            alert("""
-                                  Error while saving the data.
-
-                                  Check the validity of the input values.
-                                  """)
-                            @show_table()
-                            # alert("Error: jqXHR[#{JSON.stringify(jqXHR)}]
-                            #       textStatus[#{textStatus}]
-                            #       errorThrown[#{errorThrown}]")
-                    )
-                    return false
-                ),
-                ' | ',
-                $('<a href="#">Cancel</a>').click( =>
-                    @tabulator.tabulator("setData", @saved_data)
-                    @on_close()
-                    return false
-                ),
-                ' | ',
-                $('<a href="#">Add row</a>').click( =>
-                    # BUG: Tabulator adds the new row twice (wait for upstream
-                    #      fix)
-                    rowsM = @tabulator.tabulator("getData").length
-                    @tabulator.tabulator("addRow", {key: 'new'}, true)
-                    # BUG: Tabulator adds the new row twice (wait for upstream
-                    #      fix)
-                    data = @tabulator.tabulator("getData")
-                    rowsN = data.length
-                    if rowsN - rowsM > 1
-                        @tabulator.tabulator("setData",
-                                             data[(rowsN - rowsM - 1)..])
-                    return false
-                ),
-            )
+        if @controls?
+            controls = []
+            if not @config.show_save_cancel? or \
+                    @config.show_save_cancel isnt false
+                controls.push($('<a href="#">Save</a>').click(@save))
+                controls.push(' | ')
+                controls.push($('<a href="#">Cancel</a>').click(@cancel))
+                controls.push(' | ')
+            if not @config.show_add_row? or @config.show_add_row isnt false
+                controls.push($("<a href=\"#\">#{@config.add_row_label}</a>")
+                    .click(@add_row))
+                controls.push(' | ')
+            controls.pop()
+            @controls.empty().append(controls)
         return false
 
     set_uneditable: =>
@@ -260,9 +254,85 @@ class module.exports.Tabulator
                 def.editor_inhibited = def.editor
                 delete def.editor
         @tabulator.tabulator("setColumns", col_defs, false)
-        @controls.empty().append(
+        @controls?.empty().append(
             $('<a href="#">Edit</a>').click(@set_editable)
         )
+
+    save: =>
+        @on_saving()
+        @show_loader()
+        if @config.api_submit_action?
+            $.post(
+                url: '/api/'
+                data:
+                    action: @config.api_submit_action
+                    data: JSON.stringify(@tabulator.tabulator("getData"))
+                success: (data, textStatus, jqXHR) =>
+                    if data != 'success'
+                        alert("""
+                              Error while saving the data.
+
+                              Check the validity of the input values.
+                              """)
+                        @show_table()
+                    else
+                        onsaveret = @on_saved()
+                        if onsaveret isnt false
+                            # Reload the data, since the submitted
+                            # array doesn't have the new entity keys
+                            # that have been created
+                            # Delay the refresh a little to give the
+                            # time to the datastore to update the
+                            # entities
+                            window.setTimeout( =>
+                                    # TODO: setData should work also
+                                    #       without parameters, but it
+                                    #       doesn't (report bug)
+                                    # @tabulator.tabulator("setData")
+                                    @tabulator.tabulator(
+                                        "setData",
+                                        @tabulator_config.ajaxURL,
+                                        @tabulator_config.ajaxParams
+                                    )
+                                , 1000)
+                error: (jqXHR, textStatus, errorThrown) =>
+                    alert("""
+                          Error while saving the data.
+
+                          Check the validity of the input values.
+                          """)
+                    @show_table()
+                    # alert("Error: jqXHR[#{JSON.stringify(jqXHR)}]
+                    #       textStatus[#{textStatus}]
+                    #       errorThrown[#{errorThrown}]")
+            )
+        # BUG: The window is scrolled up probably because the table changes
+        #      size
+        return false
+
+    cancel: =>
+        oncancellingret = @on_cancelling()
+        if oncancellingret isnt false
+            @tabulator.tabulator("setData", @saved_data)
+            @on_cancelled()
+        # BUG: The window is scrolled up probably because the table changes
+        #      size
+        return false
+
+    add_row: =>
+        # BUG: Tabulator adds the new row twice (wait for upstream
+        #      fix)
+        rowsM = @tabulator.tabulator("getData").length
+        @tabulator.tabulator("addRow", {key: 'new'}, true)
+        # BUG: Tabulator adds the new row twice (wait for upstream
+        #      fix)
+        data = @tabulator.tabulator("getData")
+        rowsN = data.length
+        if rowsN - rowsM > 1
+            @tabulator.tabulator("setData", data[(rowsN - rowsM - 1)..])
+        # BUG: The window is scrolled up probably because the table changes
+        #      size (???)
+        return false
 
 
 class TableSettings
