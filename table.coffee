@@ -81,13 +81,29 @@ $.widget("ui.tabulator", $.ui.tabulator,
 
 class module.exports.Tabulator
     constructor: (@config, @tabulator_config) ->
+        firstload = $.Deferred()
+        @firstload = firstload.promise()
         @tabulator_config.dataLoading = (data, params) =>
             @show_loader()
         @tabulator_config.dataLoaded = (data) =>
             if data.length
                 @show_table()
             else
-                @show_message('No data')
+                if @config.show_nodata_controls
+                    text = if typeof @config.show_nodata_controls is 'string' \
+                        then @config.show_nodata_controls else 'Enter data'
+                    @show_message($('<a>')
+                        .attr('href', "#")
+                        .text(text)
+                        .click( =>
+                            @set_editable()
+                            @show_table()
+                            return false
+                        )
+                    )
+                else
+                    @show_message('No data')
+            firstload.resolve(data)
 
         if @config.show_controls? and @config.show_controls is false
             @controls = null
@@ -222,7 +238,8 @@ class module.exports.Tabulator
         @loader.hide()
         @controls?.show()
         @tabulator.hide()
-        @message.text(message).show()
+        # Use append() to allow for complex messages
+        @message.empty().append(message).show()
 
     set_editable: =>
         @saved_data = @tabulator.tabulator("getData")
