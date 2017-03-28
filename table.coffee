@@ -25,10 +25,7 @@ misc = require('./misc')
 $.widget("ui.tabulator", $.ui.tabulator,
     options: {}
     sorters: {}
-    formatters:
-        select: (value, data, cell, row, options) ->
-            return data["#{cell.attr('data-field')}_tabulatorcelltext"]
-
+    formatters: {}
     editors:
         date: (cell, value) ->
             datepicker = new misc.DatePicker()
@@ -76,6 +73,9 @@ $.widget("ui.tabulator", $.ui.tabulator,
 
         float: (value, data) ->
             return parseFloat(value)
+
+        boolean: (value, data) ->
+            return new Boolean(value)
 )
 
 
@@ -108,6 +108,7 @@ class module.exports.Tabulator
             @set_uneditable()
 
         @config.add_row_label ?= "Add row"
+        @config.new_row ?= {}
 
         if @config.onsaving?
             @on_saving = @config.onsaving
@@ -135,7 +136,7 @@ class module.exports.Tabulator
             @on_cancelled = ->
                 return true
 
-    @make_select_editor: (options, val, text) =>
+    @make_select_editor: (options, val, text, datatext) =>
         return (cell, value, data) =>
             if typeof options is 'function'
                 options = options()
@@ -157,6 +158,8 @@ class module.exports.Tabulator
                     "width": "100%"
                     "box-sizing": "border-box"
                 )
+            if value
+                select.val(value)
 
             if cell.hasClass("tabulator-cell")
                 setTimeout( ->
@@ -164,17 +167,21 @@ class module.exports.Tabulator
                     select.focus()
                 , 100)
 
-            select.on("blur", (event) ->
-                data["#{cell.attr('data-field')}_tabulatorcelltext"] = \
-                                                select.find(':selected').text()
+            editval = ->
+                newtext = select.find(':selected').text()
+                if typeof datatext is 'function'
+                    datatext(newtext, data)
+                else
+                    data[datatext] = newtext
                 cell.trigger("editval", select.val())
+
+            select.on("blur", (event) ->
+                editval()
             )
 
             select.on("keydown", (event) ->
                 if event.keyCode == 13
-                    data["#{cell.attr('data-field')}_tabulatorcelltext"] = \
-                                                select.find(':selected').text()
-                    cell.trigger("editval", select.val())
+                    editval()
             )
 
             return select
@@ -323,7 +330,7 @@ class module.exports.Tabulator
         # BUG: Tabulator adds the new row twice (wait for upstream
         #      fix)
         rowsM = @tabulator.tabulator("getData").length
-        @tabulator.tabulator("addRow", {key: 'new'}, true)
+        @tabulator.tabulator("addRow", @config.new_row, true)
         # BUG: Tabulator adds the new row twice (wait for upstream
         #      fix)
         data = @tabulator.tabulator("getData")
