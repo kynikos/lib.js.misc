@@ -21,11 +21,69 @@ require("jquery.tabulator")
 misc = require('./misc')
 
 
+_money_formatter = (factor) ->
+    return (value, data, cell, row, options) ->
+        # http://stackoverflow.com/a/14428340
+        return (parseFloat(value) * factor).toFixed(2)
+            .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+
+
+_number_editor = (units, decimals, factor) ->
+    return (cell, value) ->
+        value *= factor
+
+        min = "0." + "0".repeat(decimals)
+        max = "9".repeat(units) + "." + "9".repeat(decimals)
+        if decimals < 1
+            step = "1"
+        else
+            step = "0." + "0".repeat(decimals - 1) + "1"
+
+        input = $("<input type='number' min=#{min} max=#{max} step=#{step} />")
+            .css(
+                "padding": "4px"
+                "width": "100%"
+                "box-sizing": "border-box"
+            )
+            .val(value)
+
+        if cell.hasClass("tabulator-cell")
+            setTimeout( ->
+                input.focus()
+            , 100)
+
+        input.on("blur", (event) ->
+            cell.trigger("editval", input.val() / factor)
+        )
+
+        input.on("keydown", (event) ->
+            if event.keyCode == 13
+                cell.trigger("editval", input.val() / factor)
+        )
+
+        return input
+
+
 # Extend Tabulator http://olifolkerd.github.io/tabulator/docs/
 $.widget("ui.tabulator", $.ui.tabulator,
     options: {}
     sorters: {}
-    formatters: {}
+    formatters:
+        'integer*1000': (value, data, cell, row, options) ->
+            return parseInt(value, 10) * 1000
+
+        'integer/1000': (value, data, cell, row, options) ->
+            return parseInt(value, 10) / 1000
+
+        'float*1000': (value, data, cell, row, options) ->
+            return parseFloat(value) * 1000
+
+        'float/1000': (value, data, cell, row, options) ->
+            return parseFloat(value) / 1000
+
+        'money*1000': _money_formatter(1000)
+        'money/1000': _money_formatter(1/1000)
+
     editors:
         date: (cell, value) ->
             datepicker = new misc.DatePicker()
@@ -41,38 +99,38 @@ $.widget("ui.tabulator", $.ui.tabulator,
 
             return $('<span>').append(datepicker.input, datepicker.display)
 
-        money: (cell, value) ->
-            input = $("<input type='number' min=0.00 max=9999.99 step=0.01 />")
-                .css(
-                    "padding": "4px"
-                    "width": "100%"
-                    "box-sizing": "border-box"
-                )
-                .val(value)
+        'integer4': _number_editor(4, 0, 1)
+        'integer4*1000': _number_editor(4, 0, 1000)
+        'integer4/1000': _number_editor(4, 0, 1/1000)
+        'float4.2': _number_editor(4, 2, 1)
+        'float4.2*1000': _number_editor(4, 2, 1000)
+        'float4.2/1000': _number_editor(4, 2, 1/1000)
 
-            if cell.hasClass("tabulator-cell")
-                setTimeout( ->
-                    input.focus()
-                , 100)
+    mutators:
+        '*1000': (value, type, data) ->
+            return value * 1000
 
-            input.on("blur", (event) ->
-                cell.trigger("editval", input.val())
-            )
+        '/1000': (value, type, data) ->
+            return value / 1000
 
-            input.on("keydown", (event) ->
-                if event.keyCode == 13
-                    cell.trigger("editval", input.val())
-            )
-
-            return input
-
-    mutators: {}
     accessors:
         integer: (value, data) ->
             return parseInt(value, 10)
 
+        'integer*1000': (value, data) ->
+            return parseInt(value, 10) * 1000
+
+        'integer/1000': (value, data) ->
+            return parseInt(value, 10) / 1000
+
         float: (value, data) ->
             return parseFloat(value)
+
+        'float*1000': (value, data) ->
+            return parseFloat(value) * 1000
+
+        'float/1000': (value, data) ->
+            return parseFloat(value) / 1000
 
         boolean: (value, data) ->
             return new Boolean(value)
@@ -81,9 +139,12 @@ $.widget("ui.tabulator", $.ui.tabulator,
 
 class module.exports.Tabulator
     constructor: (@config, @tabulator_config) ->
-        firstload = $.Deferred()
-        @firstload = firstload.promise()
+        @_firstload = $.Deferred()
+        @firstload = @_firstload.promise()
         @tabulator_config.dataLoading = (data, params) =>
+            # @firstload should be resolved every time new data is loaded
+            @_firstload = $.Deferred()
+            @firstload = @_firstload.promise()
             @show_loader()
         @tabulator_config.dataLoaded = (data) =>
             if data.length
@@ -103,7 +164,7 @@ class module.exports.Tabulator
                     )
                 else
                     @show_message('No data')
-            firstload.resolve(data)
+            @_firstload.resolve(data)
 
         if @config.show_controls? and @config.show_controls is false
             @controls = null
