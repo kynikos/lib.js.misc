@@ -23,6 +23,20 @@ WEEKDAYS_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 module.exports.WEEKDAYS_SHORT = WEEKDAYS_SHORT
 
 
+format_division = (dividend, divisor, decimals) ->
+    return (dividend / divisor).toFixed(decimals)
+module.exports.format_division = format_division
+
+
+module.exports.rounded_division = (dividend, divisor, decimals) ->
+    return parseFloat(format_division(dividend, divisor, decimals))
+
+
+module.exports.format_money = (value) ->
+    # http://stackoverflow.com/a/14428340
+    return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+
+
 # Open links in the same window when using "apple-mobile-web-app-capable"
 $.fn.standaloneAppLinks = ->
     @each( ->

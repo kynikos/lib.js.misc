@@ -23,9 +23,7 @@ misc = require('./misc')
 
 _money_formatter = (factor) ->
     return (value, data, cell, row, options) ->
-        # http://stackoverflow.com/a/14428340
-        return (parseFloat(value) * factor).toFixed(2)
-            .replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+        return misc.format_money(parseFloat(value) * factor)
 
 
 _number_editor = (units, decimals, factor) ->
@@ -53,12 +51,14 @@ _number_editor = (units, decimals, factor) ->
             , 100)
 
         input.on("blur", (event) ->
-            cell.trigger("editval", input.val() / factor)
+            cell.trigger("editval", misc.rounded_division(
+                                            input.val(), factor, decimals))
         )
 
         input.on("keydown", (event) ->
             if event.keyCode == 13
-                cell.trigger("editval", input.val() / factor)
+                cell.trigger("editval", misc.rounded_division(
+                                            input.val(), factor, decimals))
         )
 
         return input
@@ -70,16 +70,25 @@ $.widget("ui.tabulator", $.ui.tabulator,
     sorters: {}
     formatters:
         'integer*1000': (value, data, cell, row, options) ->
-            return parseInt(value, 10) * 1000
+            return parseInt(value * 1000, 10)
 
         'integer/1000': (value, data, cell, row, options) ->
-            return parseInt(value, 10) / 1000
+            return misc.format_division(value, 1000, 0)
 
         'float*1000': (value, data, cell, row, options) ->
-            return parseFloat(value) * 1000
+            return value * 1000
 
-        'float/1000': (value, data, cell, row, options) ->
-            return parseFloat(value) / 1000
+        'float.3*1000': (value, data, cell, row, options) ->
+            return parseFloat((value * 1000).toFixed(3))
+
+        'float.30*1000': (value, data, cell, row, options) ->
+            return (value * 1000).toFixed(3)
+
+        'float.3/1000': (value, data, cell, row, options) ->
+            return misc.rounded_division(value, 1000, 3)
+
+        'float.30/1000': (value, data, cell, row, options) ->
+            return misc.format_division(value, 1000, 3)
 
         'money*1000': _money_formatter(1000)
         'money/1000': _money_formatter(1/1000)
@@ -105,32 +114,26 @@ $.widget("ui.tabulator", $.ui.tabulator,
         'float4.2': _number_editor(4, 2, 1)
         'float4.2*1000': _number_editor(4, 2, 1000)
         'float4.2/1000': _number_editor(4, 2, 1/1000)
+        'float4.3': _number_editor(4, 3, 1)
+        'float4.3*1000': _number_editor(4, 3, 1000)
+        'float4.3/1000': _number_editor(4, 3, 1/1000)
 
     mutators:
-        '*1000': (value, type, data) ->
-            return value * 1000
+        integer: (value, type, data) ->
+            return parseInt(value, 10)
 
-        '/1000': (value, type, data) ->
-            return value / 1000
+        float: (value, type, data) ->
+            return parseFloat(value)
+
+        boolean: (value, type, data) ->
+            return new Boolean(value)
 
     accessors:
         integer: (value, data) ->
             return parseInt(value, 10)
 
-        'integer*1000': (value, data) ->
-            return parseInt(value, 10) * 1000
-
-        'integer/1000': (value, data) ->
-            return parseInt(value, 10) / 1000
-
         float: (value, data) ->
             return parseFloat(value)
-
-        'float*1000': (value, data) ->
-            return parseFloat(value) * 1000
-
-        'float/1000': (value, data) ->
-            return parseFloat(value) / 1000
 
         boolean: (value, data) ->
             return new Boolean(value)
