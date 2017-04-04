@@ -150,33 +150,80 @@ class module.exports.Tabulator
             @firstload = @_firstload.promise()
             @show_loader()
         @tabulator_config.dataLoaded = (data) =>
+            @controls.children().detach()
+            # Detach to preserve the control elements to be readded, but
+            # then also empty to get rid of the separator pipes ("|")
+            @controls.empty()
             if data.length
+                @controls.append(if @is_editable then @controls_edit \
+                                 else @controls_view)
                 @show_table()
             else
-                if @config.show_nodata_controls
-                    text = if typeof @config.show_nodata_controls is 'string' \
-                        then @config.show_nodata_controls else 'Enter data'
-                    @show_message($('<a>')
-                        .attr('href', "#")
-                        .text(text)
-                        .click( =>
-                            @set_editable()
-                            @show_table()
-                            return false
-                        )
-                    )
-                else
-                    @show_message('No data')
+                @controls.append(@controls_nodata)
+                @show_nodata_message()
             @_firstload.resolve(data)
 
-        if @config.show_controls? and @config.show_controls is false
-            @controls = null
+        @config.show_view_controls ?= ['edit', 'export']
+        if @config.show_view_controls
+            @controls_view = []
+            if 'edit' in @config.show_view_controls
+                @controls_view.push($('<a href="#">Edit</a>')
+                    .click(@set_editable))
+                @controls_view.push(' | ')
+            if 'export' in @config.show_view_controls
+                @controls_view.push($('<a href="#">Export</a>').click( =>
+                    @tabulator.tabulator("download", "csv", "data.csv")
+                    return false
+                ))
+                @controls_view.push(' | ')
+            @controls_view.pop()
+
+        @config.show_nodata_controls ?= ['edit']
+        if @config.show_nodata_controls
+            @controls_nodata = []
+            if 'edit' in @config.show_nodata_controls
+                @controls_nodata.push($('<a href="#">Edit</a>')
+                    .click(@set_editable))
+                @controls_nodata.push(' | ')
+            @controls_nodata.pop()
+
+        @config.add_row_label ?= "Add row"
+        @config.new_row ?= {}
+        @config.show_edit_controls ?= ['save', 'cancel', 'add_row']
+        if @config.show_edit_controls
+            @controls_edit = []
+            if 'save' in @config.show_edit_controls
+                @controls_edit.push($('<a href="#">Save</a>').click(@save))
+                @controls_edit.push(' | ')
+            if 'cancel' in @config.show_edit_controls
+                @controls_edit.push($('<a href="#">Cancel</a>').click(@cancel))
+                @controls_edit.push(' | ')
+            if 'add_row' in @config.show_edit_controls
+                @controls_edit.push(
+                    $("<a href=\"#\">#{@config.add_row_label}</a>")
+                        .click(@add_row))
+                @controls_edit.push(' | ')
+            @controls_edit.pop()
+
+        if @config.show_nodata_message
+            text = if typeof @config.show_nodata_message is 'string' \
+                then @config.show_nodata_message else 'Enter data'
+            @message = $('<p>').append(
+                $('<a>')
+                    .attr('href', "#")
+                    .text(text)
+                    .click( =>
+                        @set_editable()
+                        @show_table()
+                        return false
+                    )
+            )
         else
-            @controls = $('<div class="tabulator-controls">').hide()
+            @message = $('<p>').text('No data')
 
         @widget = $('<div class="tabulator-container">').append(
-            @controls,
-            @message = $('<p>').hide(),
+            @controls = $('<div class="tabulator-controls">').hide(),
+            @message.hide(),
             @loader = if @config.loader? then @config.loader \
                       else $('<p>Loading...</p>'),
             @tabulator = $('<div>').tabulator(@tabulator_config).hide(),
@@ -186,9 +233,6 @@ class module.exports.Tabulator
             @set_editable()
         else
             @set_uneditable()
-
-        @config.add_row_label ?= "Add row"
-        @config.new_row ?= {}
 
         if @config.onsaving?
             @on_saving = @config.onsaving
@@ -287,25 +331,26 @@ class module.exports.Tabulator
         @widget.hide()
 
     show_loader: =>
-        @controls?.hide()
+        @controls.hide()
         @message.hide()
         @tabulator.hide()
         @loader.show()
 
     show_table: =>
         @loader.hide()
-        @controls?.show()
+        @controls.show()
         @message.hide()
         @tabulator.show()
 
-    show_message: (message) =>
+    show_nodata_message: =>
         @loader.hide()
-        @controls?.show()
+        if @controls_nodata?
+            @controls.show()
         @tabulator.hide()
-        # Use append() to allow for complex messages
-        @message.empty().append(message).show()
+        @message.show()
 
     set_editable: =>
+        @is_editable = true
         @saved_data = @tabulator.tabulator("getData")
         col_defs = @tabulator.tabulator("getColumns")
         for def in col_defs
@@ -314,23 +359,16 @@ class module.exports.Tabulator
             if def.editor_inhibited?
                 def.editor = def.editor_inhibited
         @tabulator.tabulator("setColumns", col_defs, false)
-        if @controls?
-            controls = []
-            if not @config.show_save_cancel? or \
-                    @config.show_save_cancel isnt false
-                controls.push($('<a href="#">Save</a>').click(@save))
-                controls.push(' | ')
-                controls.push($('<a href="#">Cancel</a>').click(@cancel))
-                controls.push(' | ')
-            if not @config.show_add_row? or @config.show_add_row isnt false
-                controls.push($("<a href=\"#\">#{@config.add_row_label}</a>")
-                    .click(@add_row))
-                controls.push(' | ')
-            controls.pop()
-            @controls.empty().append(controls)
+        @controls.children().detach()
+        # Detach to preserve the control elements to be readded, but
+        # then also empty to get rid of the separator pipes ("|")
+        @controls.empty()
+        if @controls_edit?
+            @controls.append(@controls_edit)
         return false
 
     set_uneditable: =>
+        @is_editable = false
         col_defs = @tabulator.tabulator("getColumns")
         for def in col_defs
             if def.editable? and def.editable is true
@@ -342,9 +380,12 @@ class module.exports.Tabulator
                 def.editor_inhibited = def.editor
                 delete def.editor
         @tabulator.tabulator("setColumns", col_defs, false)
-        @controls?.empty().append(
-            $('<a href="#">Edit</a>').click(@set_editable)
-        )
+        @controls.children().detach()
+        # Detach to preserve the control elements to be readded, but
+        # then also empty to get rid of the separator pipes ("|")
+        @controls.empty()
+        if @controls_view?
+            @controls.append(@controls_view)
 
     save: =>
         @on_saving()
