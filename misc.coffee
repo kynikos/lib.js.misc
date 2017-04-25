@@ -23,6 +23,15 @@ WEEKDAYS_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 module.exports.WEEKDAYS_SHORT = WEEKDAYS_SHORT
 
 
+format_multiplication = (factor1, factor2, decimals) ->
+    return (factor1 * factor2).toFixed(decimals)
+module.exports.format_multiplication = format_multiplication
+
+
+module.exports.rounded_multiplication = (factor1, factor2, decimals) ->
+    return parseFloat(format_multiplication(factor1, factor2, decimals))
+
+
 format_division = (dividend, divisor, decimals) ->
     return (dividend / divisor).toFixed(decimals)
 module.exports.format_division = format_division

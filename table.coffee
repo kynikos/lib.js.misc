@@ -26,10 +26,7 @@ _money_formatter = (factor) ->
         return misc.format_money(parseFloat(value) * factor)
 
 
-_number_editor = (units, decimals, factor) ->
-    return (cell, value) ->
-        value *= factor
-
+_number_editor_input = (cell, value, units, decimals, post_process) ->
         min = "0." + "0".repeat(decimals)
         max = "9".repeat(units) + "." + "9".repeat(decimals)
         if decimals < 1
@@ -51,17 +48,42 @@ _number_editor = (units, decimals, factor) ->
             , 100)
 
         input.on("blur", (event) ->
-            cell.trigger("editval", misc.rounded_division(
-                                            input.val(), factor, decimals))
+            cell.trigger("editval", post_process(input.val()))
         )
 
         input.on("keydown", (event) ->
             if event.keyCode == 13
-                cell.trigger("editval", misc.rounded_division(
-                                            input.val(), factor, decimals))
+                cell.trigger("editval", post_process(input.val()))
         )
 
         return input
+
+
+_number_editor = (units, decimals) ->
+    return (cell, value) ->
+        return _number_editor_input(cell, value, units, decimals, (inputval) ->
+            return inputval
+        )
+
+
+_number_editor_multiply = (units, decimals, scale) ->
+    return (cell, value) ->
+        factor = 10 ** scale
+        value = misc.rounded_multiplication(value, factor, decimals)
+        return _number_editor_input(cell, value, units, decimals, (inputval) ->
+            # Add scale to decimals, since the original number may have had
+            # more decimal digits than 'decimals'
+            return misc.rounded_division(inputval, factor, decimals + scale)
+        )
+
+
+_number_editor_divide = (units, decimals, scale) ->
+    return (cell, value) ->
+        divisor = 10 ** scale
+        value = misc.rounded_division(value, divisor, decimals)
+        return _number_editor_input(cell, value, units, decimals, (inputval) ->
+            misc.rounded_multiplication(inputval, divisor, decimals)
+        )
 
 
 # Extend Tabulator http://olifolkerd.github.io/tabulator/docs/
@@ -108,15 +130,15 @@ $.widget("ui.tabulator", $.ui.tabulator,
 
             return $('<span>').append(datepicker.input, datepicker.display)
 
-        'integer4': _number_editor(4, 0, 1)
-        'integer4*1000': _number_editor(4, 0, 1000)
-        'integer4/1000': _number_editor(4, 0, 1/1000)
-        'float4.2': _number_editor(4, 2, 1)
-        'float4.2*1000': _number_editor(4, 2, 1000)
-        'float4.2/1000': _number_editor(4, 2, 1/1000)
-        'float4.3': _number_editor(4, 3, 1)
-        'float4.3*1000': _number_editor(4, 3, 1000)
-        'float4.3/1000': _number_editor(4, 3, 1/1000)
+        'integer4': _number_editor(4, 0)
+        'integer4*1000': _number_editor_multiply(4, 0, 3)
+        'integer4/1000': _number_editor_divide(4, 0, 3)
+        'float4.2': _number_editor(4, 2)
+        'float4.2*1000': _number_editor_multiply(4, 2, 3)
+        'float4.2/1000': _number_editor_divide(4, 2, 3)
+        'float4.3': _number_editor(4, 3)
+        'float4.3*1000': _number_editor_multiply(4, 3, 3)
+        'float4.3/1000': _number_editor_divide(4, 3, 3)
 
     mutators:
         integer: (value, type, data) ->
