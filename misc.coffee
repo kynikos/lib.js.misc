@@ -22,6 +22,10 @@ require("jquery-ui-browserify")
 WEEKDAYS_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 module.exports.WEEKDAYS_SHORT = WEEKDAYS_SHORT
 
+module.exports.MONTHS_LONG = ['January', 'February', 'March', 'April', 'May',
+                              'June', 'July', 'August', 'September', 'October',
+                              'November', 'December']
+
 
 format_multiplication = (factor1, factor2, decimals) ->
     return (factor1 * factor2).toFixed(decimals)
