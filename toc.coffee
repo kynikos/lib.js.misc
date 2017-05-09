@@ -26,9 +26,15 @@ class module.exports.TableOfContents
         #       elements further down; in other words, the first header element
         #       after #table-of-contents must be the lowest header level that
         #       should be in the table of contents
-        rootul = $('<ul>')
+        @rootul = $('<ul>')
+        @refresh()
+        $('#table-of-contents').after(@rootul)
+
+    refresh: ->
+        @rootul.empty()
+
         tocheaderfound = false
-        currul = rootul
+        currul = @rootul
         currhlevel = 0
 
         $(':header').each( ->
@@ -55,8 +61,6 @@ class module.exports.TableOfContents
             else if header.attr('id') == 'table-of-contents'
                 tocheaderfound = true
         )
-
-        $('#table-of-contents').after(rootul)
 
 
 class EnhancedHeading
