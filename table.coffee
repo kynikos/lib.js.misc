@@ -89,7 +89,35 @@ _number_editor_divide = (units, decimals, scale) ->
 # Extend Tabulator http://olifolkerd.github.io/tabulator/docs/
 $.widget("ui.tabulator", $.ui.tabulator,
     options: {}
-    sorters: {}
+
+    sorters:
+        'generic_ext': (a, b, aData, bData, field, dir) ->
+            if a < b
+                return -1
+            if a > b
+                return 1
+            return 0
+
+        'number_ext': (a, b, aData, bData, field, dir) ->
+            if bData.always_sort_last? and bData.always_sort_last
+                return -1
+            if aData.always_sort_last? and aData.always_sort_last
+                return 1
+            return a - b
+
+        'istring_ext': (a, b, aData, bData, field, dir) ->
+            if bData.always_sort_last? and bData.always_sort_last
+                return -1
+            if aData.always_sort_last? and aData.always_sort_last
+                return 1
+            ai = a.toLowerCase()
+            bi = b.toLowerCase()
+            if ai < bi
+                return -1
+            if ai > bi
+                return 1
+            return 0
+
     formatters:
         'integer*1000': (value, data, cell, row, options) ->
             return parseInt(value * 1000, 10)
