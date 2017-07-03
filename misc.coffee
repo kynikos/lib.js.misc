@@ -18,6 +18,8 @@
 
 $ = require('jquery')
 require("jquery-ui-browserify")
+# BUG: bootstrap-datepicker may conflict with jquery-ui's datepicker
+# require('bootstrap-datepicker')
 
 WEEKDAYS_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 module.exports.WEEKDAYS_SHORT = WEEKDAYS_SHORT
@@ -165,6 +167,79 @@ class module.exports.DatePicker
     disable: ->
         @input.datepicker("setDate", null)
         @display.attr('disabled', 'true')
+
+
+class BootstrapDatePickerAltDisplay
+    constructor: (config={}, dpconfig={}) ->
+        config.format_date ?= (widget) =>
+            return widget.get_date()
+
+        @picker = $('<input>')
+            # Simply setting it as type="hidden" would show the popup in the
+            # top-left corner of the screen
+            .css(
+                width: 0
+                height: 0
+                margin: 0
+                padding: 0
+                border: 'none'
+            )
+            .datepicker(dpconfig)
+            .change( =>
+                @display.val(config.format_date(this))
+            )
+
+        @display = $('<input>')
+            .attr(
+                'type': 'text'
+                # TODO: Support readonly=false, but the user should provide a
+                #       should be a reverse format_date function (parse_date)
+                'readonly': config.readonly ? true
+                'placeholder': config.placeholder ? 'Select a date'
+            )
+            .addClass('datepicker-display')
+            .click( =>
+                @picker.datepicker('show')
+            )
+
+        if config.name?
+            @picker.attr('name', config.name)
+
+        if config.size?
+            @display.attr('size', config.size)
+
+        if config.class?
+            @display.addClass(config.class)
+
+        # This block triggers 'change' on the picker, execute after configuring
+        # everything
+        if config.initial_value?
+            @set_date(config.initial_value)
+            @picker.trigger('change')
+
+    get_date: ->
+        return @picker.datepicker('getDate')
+
+    set_date: (date) ->
+        if typeof date is 'string'
+            date = new Date(date)
+        return @picker.datepicker('setDate', date)
+
+
+$.fn.bootstrapDatepickerAltDisplay = (args...) ->
+    @each( ->
+        if typeof args[0] is 'string'
+            widget = $(this).data('widget')
+            return widget[args[0]](args[1...]...)
+        config = args[0] ? {}
+        dpconfig = args[1] ? {}
+        widget  = new BootstrapDatePickerAltDisplay(config, dpconfig)
+        return $(this)
+            .data('widget', widget)
+            # Append the picker before the display, so that the popup appears
+            # on the left
+            .append(widget.picker, widget.display)
+    )
 
 
 class module.exports.WeekDaySelector
