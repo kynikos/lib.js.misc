@@ -55,12 +55,31 @@ module.exports.format_money = (value) ->
     return value.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
 
 
+$.fn.geoMapHref = ->
+    @each( ->
+        link = $(this)
+        coords = link.attr('data-geomap-coordinates') ? "0,0"
+        query = link.attr('data-geomap-query') ? ""
+        if window.navigator.platform.match(/iPad|iPhone|iPod/i) is null
+            link.attr('href', "geo:#{coords}?q=#{query}")
+        else
+            # TODO: The "geo:" URI scheme doesn't work on Safari yet
+            if query
+                # Yes, apparently putting the coordinates in place
+                # of 0,0 doesn't work...
+                link.attr('href', "maps:0,0?q=#{query}")
+            else
+                link.attr('href', "maps:0,0?q=#{coords}")
+        return link
+    )
+
+
 # Open links in the same window when using "apple-mobile-web-app-capable"
 $.fn.standaloneAppLinks = ->
     @each( ->
         $(this).find('a').each( ->
             href = $(this).attr('href')
-            if href isnt '' and href[0] isnt '#'
+            if href? and href isnt '' and href.charAt(0) isnt '#'
                 $(this).on('click', (event) ->
                     event.preventDefault()
                     window.location.href = $(event.currentTarget).attr('href')
