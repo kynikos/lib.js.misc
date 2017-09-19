@@ -17,6 +17,7 @@
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
 $ = require('jquery')
+misc = require('./misc')
 
 
 module.exports.Choice = (options, selected, attributes) ->
@@ -41,3 +42,34 @@ module.exports.Multichoice = (legend, items, checked, attributes) ->
             input.attr('checked', '')
         fieldset.append($('<div>').append(item, input))
     return fieldset
+
+
+class module.exports.WeekDaySelector
+    constructor:  (selected_days, baseid, radio=false) ->
+        @container = $('<span>').addClass('weekdayselector')
+        for wday, index in misc.WEEKDAYS_SHORT
+            id = "#{baseid}-#{index}"
+            name = "#{baseid}"
+            input = $('<input>')
+                .attr(
+                    'type': if radio then 'radio' else 'checkbox'
+                    'name': name
+                    'id': id
+                )
+                .val(index)
+                .appendTo(@container)
+
+            if selected_days.indexOf(index) > -1
+                input.prop("checked", true)
+
+            $('<label>')
+                .attr('for', id)
+                .text(wday)
+                .appendTo(@container)
+
+    get_days: ->
+        days = []
+        for input in @container.children('input')
+            if input.checked
+                days.push(input.value)
+        return days
