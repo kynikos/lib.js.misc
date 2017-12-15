@@ -18,20 +18,14 @@
 
 # TODO: See also:
 #       * https://github.com/queckezz/elementx
+#       * https://github.com/uber/r-dom
 #       * https://github.com/Raynos/mercury
 #       * https://github.com/hyperapp/hyperapp
-
+# TODO: Add easier support for 'aria-*' attributes and others in hyperscript
 hyperscript = require('hyperscript')
-hyperscript_helpers = require('hyperscript-helpers')(hyperscript)
-# I don't want the hyperscript-helpers tags to be lowercase
-# TODO: Propose upstream? https://github.com/ohanhi/hyperscript-helpers
-module.exports.hyperscript = ( ->
-    exported = {}
-    for tag in hyperscript_helpers.TAG_NAMES
-        exported[tag.charAt(0).toUpperCase() + tag.slice(1)] =
-            hyperscript_helpers[tag]
-    return exported
-)()
+# TODO: Urge releasing the latest hyperscript-helpers with
+#       https://github.com/ohanhi/hyperscript-helpers/pull/46
+module.exports.hyperscript = require('hyperscript-helpers')(hyperscript)
 
 
 # Originally adpatded from https://stackoverflow.com/a/40075864
@@ -42,6 +36,7 @@ module.exports.hyperscript = ( ->
 #             {style: {background: "red"}}
 #         )
 #     ])
+# BUG: Proxy is an ES6 feature which can't be translated by Babel...
 module.exports.createElement = new Proxy({}, {
     get: (target, property, receiver) ->
         return (children, attrs = {}) ->
