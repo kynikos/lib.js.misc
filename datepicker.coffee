@@ -17,53 +17,6 @@
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
 $ = require('jquery')
-require("jquery-ui-browserify")
-# BUG: bootstrap-datepicker may conflict with jquery-ui's datepicker
-# require('bootstrap-datepicker')
-
-
-class module.exports.DatePicker
-    constructor: ->
-        @display = $('<input>')
-            .attr(
-                'type': 'text'
-                'readonly': 'true'
-                'size': 30
-                'placeholder': 'Select a date'
-            )
-            .addClass('datepicker-display')
-            .click( =>
-                @input.datepicker('show')
-            )
-        @input = $('<input>')
-            .attr('type', 'hidden')
-            .datepicker(
-                dateFormat: 'yy-mm-dd'
-                altField: @display
-                altFormat: "DD, d MM yy"
-                firstDay: 1
-            )
-
-    show: ->
-        @input.datepicker('show')
-
-    hide: ->
-        @input.datepicker('hide')
-
-    set_date: (date) ->
-        if typeof date is 'string'
-            date = $.datepicker.parseDate('yy-mm-dd', date)
-        @input.datepicker("setDate", date)
-
-    get_date: ->
-        return @input.val()
-
-    enable: ->
-        @display.removeAttr('disabled')
-
-    disable: ->
-        @input.datepicker("setDate", null)
-        @display.attr('disabled', 'true')
 
 
 class BootstrapDatePickerAltDisplay
