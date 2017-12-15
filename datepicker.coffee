@@ -18,6 +18,10 @@
 
 if not $? and not jQuery?
     window.$ = window.jQuery = require('jquery')
+if not $().modal? and not jQuery().modal?
+    require('bootstrap')
+if not $().datepicker? and not jQuery().datepicker
+    require('bootstrap-datepicker')
 
 
 class BootstrapDatePickerAltDisplay
@@ -81,7 +85,9 @@ $.fn.bootstrapDatepickerAltDisplay = (args...) ->
     @each( ->
         if typeof args[0] is 'string'
             widget = $(this).data('widget')
-            return widget[args[0]](args[1...]...)
+            # BUG: This is broken because the main
+            #      bootstrapDatepickerAltDisplay method returns @each
+            return widget.picker.datepicker(args...)
         config = args[0] ? {}
         dpconfig = args[1] ? {}
         widget  = new BootstrapDatePickerAltDisplay(config, dpconfig)
