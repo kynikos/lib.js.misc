@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
-$ = require('jquery')
+if not $? and not jQuery?
+    window.$ = window.jQuery = require('jquery')
 
 
 class module.exports.TableOfContents
