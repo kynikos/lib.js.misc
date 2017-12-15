@@ -18,15 +18,21 @@
 
 if not $? and not jQuery?
     window.$ = window.jQuery = require('jquery')
+h = require('hyperscript')
 misc = require('./misc')
 
 
-module.exports.Choice = (options, selected, attributes) ->
-    select = $('<select>').attr(attributes)
+module.exports.Choice = (options, selected, props) ->
+    select = h('select', props)
     for opt in options
-        option = $('<option>').text(opt).val(opt).appendTo(select)
-        if opt == selected
-            option.attr('selected', '')
+        if Array.isArray(opt)
+            [text, val] = opt
+        else
+            text = val = opt
+        option = h('option', {value: val}, text)
+        if val is selected
+            option.selected = true
+        select.appendChild(option)
     return select
 
 
