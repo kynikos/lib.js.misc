@@ -60,10 +60,15 @@ for tagName in HTML_TAG_NAMES
     module.exports[tagName.charAt(0).toUpperCase() + tagName.slice(1)] =
         createFactory(tagName)
 
+
+class Component extends React.Component
+    constructor: (props) ->
+        super(props)
+        @init(props)
+
+
 module.exports.createElement = createElement
 module.exports.create_element = createElement
-module.exports.c = createElement
-module.exports.C = createElement
 module.exports.e = createElement
 module.exports.E = createElement
 module.exports.h = createElement
@@ -78,3 +83,5 @@ module.exports.f = createFragment
 module.exports.F = createFragment
 module.exports.createFactory = createFactory
 module.exports.create_factory = createFactory
+module.exports.Component = Component
+module.exports.C = Component
