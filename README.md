@@ -1,3 +1,7 @@
-A JavaScript auxiliary library
+Miscellaneous CoffeeScript modules.
 
-License: GPLv3 (see LICENSE).
+## License
+
+lib.cs.html is distributed under the terms of the
+[GNU General Public License v3.0](http://www.gnu.org/copyleft/gpl.html)
+(see LICENSE).
