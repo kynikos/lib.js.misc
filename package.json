@@ -1,0 +1,28 @@
+{
+  "name": "@kynikos/misc",
+  "version": "0.1.0",
+  "author": "Dario Giovannetti",
+  "description": "Miscellaneous, random, old scripts.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kynikos/lib.js.misc.git"
+  },
+  "scripts": {
+    "compile": "coffee --compile --bare --output ./dist/ ./src/*.coffee"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0",
+    "bootstrap-datepicker": "^1.7.1",
+    "bootstrap-table": "^1.11.2",
+    "hyperscript": "^2.0.2",
+    "hyperscript-helpers": "^3.0.3",
+    "jquery": "^3.3.1",
+    "jquery-ui-browserify": "^1.11.0-pre-seelio",
+    "jquery.tabulator": "^3.3.3",
+    "papaparse": "^4.3.6"
+  },
+  "devDependencies": {
+    "coffeescript": "^2.1.1"
+  }
+}
