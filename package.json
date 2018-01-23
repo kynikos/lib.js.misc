@@ -9,7 +9,7 @@
     "url": "https://github.com/kynikos/lib.js.misc.git"
   },
   "scripts": {
-    "compile": "coffee --compile --bare --output ./dist/ ./src/*.coffee"
+    "compile": "coffee --compile --transpile --bare --output ./dist/ ./src/*.coffee"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
@@ -23,6 +23,13 @@
     "papaparse": "^4.3.6"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "coffeescript": "^2.1.1"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
   }
 }
