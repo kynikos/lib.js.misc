@@ -20,14 +20,13 @@
 const moment = require('moment')
 
 
-function makeCalendar({
-  sortedDates,
+function roundDateRangeToWholeWeeks({
+  dateRange,
   firstDayOfWeek = 1,
 }) {
-  if (!sortedDates || !sortedDates.length) return null
+  const firstRangeDate = dateRange[0]
+  const lastRangeDate = dateRange[1]
 
-  const firstRangeDate = sortedDates[0]
-  const lastRangeDate = sortedDates.slice(-1)[0]
   const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1
   const diff1 = firstRangeDate.day() >= firstDayOfWeek
     ? firstDayOfWeek
@@ -35,15 +34,27 @@ function makeCalendar({
   const diff2 = lastRangeDate.day() <= lastDayOfWeek
     ? lastDayOfWeek
     : (lastDayOfWeek + 7)
-  const firstDate = moment(firstRangeDate).day(diff1)
-  const lastDate = moment(lastRangeDate).day(diff2)
+
+  return [
+    moment(firstRangeDate).day(diff1),
+    moment(lastRangeDate).day(diff2),
+  ]
+}
+module.exports.roundDateRangeToWholeWeeks = roundDateRangeToWholeWeeks
+
+
+function makeCalendar({
+  roundedDateRange,
+  dates,
+}) {
+  const firstDate = roundedDateRange[0]
+  const lastDate = roundedDateRange[1]
 
   const rows = [[]]
 
   for (
     let rDate = moment(firstDate);
-    // eslint-disable-next-line no-unmodified-loop-condition
-    rDate <= lastDate;
+    rDate.isSameOrBefore(lastDate, 'day');
     rDate.add(1, 'day')
   ) {
     const cDate = moment(rDate)
@@ -56,11 +67,10 @@ function makeCalendar({
 
     cRow.push({
       date: cDate,
-      inRange: sortedDates.some((date) => date.isSame(cDate, 'day')),
+      inRange: dates.some((date) => date.isSame(cDate, 'day')),
     })
   }
 
   return rows
 }
 module.exports.makeCalendar = makeCalendar
-module.exports.default = makeCalendar

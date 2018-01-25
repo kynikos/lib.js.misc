@@ -20,18 +20,25 @@
 // If not, see <http://www.gnu.org/licenses/>.
 var moment = require('moment');
 
-function makeCalendar(_ref) {
-  var sortedDates = _ref.sortedDates,
+function roundDateRangeToWholeWeeks(_ref) {
+  var dateRange = _ref.dateRange,
       _ref$firstDayOfWeek = _ref.firstDayOfWeek,
       firstDayOfWeek = _ref$firstDayOfWeek === void 0 ? 1 : _ref$firstDayOfWeek;
-  if (!sortedDates || !sortedDates.length) return null;
-  var firstRangeDate = sortedDates[0];
-  var lastRangeDate = sortedDates.slice(-1)[0];
+  var firstRangeDate = dateRange[0];
+  var lastRangeDate = dateRange[1];
   var lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
   var diff1 = firstRangeDate.day() >= firstDayOfWeek ? firstDayOfWeek : firstDayOfWeek - 7;
   var diff2 = lastRangeDate.day() <= lastDayOfWeek ? lastDayOfWeek : lastDayOfWeek + 7;
-  var firstDate = moment(firstRangeDate).day(diff1);
-  var lastDate = moment(lastRangeDate).day(diff2);
+  return [moment(firstRangeDate).day(diff1), moment(lastRangeDate).day(diff2)];
+}
+
+module.exports.roundDateRangeToWholeWeeks = roundDateRangeToWholeWeeks;
+
+function makeCalendar(_ref2) {
+  var roundedDateRange = _ref2.roundedDateRange,
+      dates = _ref2.dates;
+  var firstDate = roundedDateRange[0];
+  var lastDate = roundedDateRange[1];
   var rows = [[]];
 
   var _loop = function _loop(rDate) {
@@ -45,14 +52,13 @@ function makeCalendar(_ref) {
 
     cRow.push({
       date: cDate,
-      inRange: sortedDates.some(function (date) {
+      inRange: dates.some(function (date) {
         return date.isSame(cDate, 'day');
       })
     });
   };
 
-  for (var rDate = moment(firstDate); // eslint-disable-next-line no-unmodified-loop-condition
-  rDate <= lastDate; rDate.add(1, 'day')) {
+  for (var rDate = moment(firstDate); rDate.isSameOrBefore(lastDate, 'day'); rDate.add(1, 'day')) {
     _loop(rDate);
   }
 
@@ -60,4 +66,3 @@ function makeCalendar(_ref) {
 }
 
 module.exports.makeCalendar = makeCalendar;
-module.exports["default"] = makeCalendar;
