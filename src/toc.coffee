@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
-if not $? and not jQuery?
-    window.$ = window.jQuery = require('jquery')
+$ = require('jquery')
 
 
 class module.exports.TableOfContents
@@ -123,8 +122,9 @@ class EnhancedHeading
         return false
 
 
-$.fn.enhanceHeading = ->
-    @each( ->
-        new EnhancedHeading($(this))
-        return $(this)
-    )
+module.exports.extjQuery = ($) ->
+    $.fn.enhanceHeading = ->
+        @each( ->
+            new EnhancedHeading($(this))
+            return $(this)
+        )

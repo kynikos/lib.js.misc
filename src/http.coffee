@@ -23,6 +23,7 @@ module.exports.getUrlLocation = (url) ->
     link.href = url
     return link
 
+
 module.exports.getURIParameters = (uri) ->
     if uri
         qstring = module.exports.getUrlLocation(uri).search
@@ -39,8 +40,19 @@ module.exports.getURIParameters = (uri) ->
 
     return qdict
 
+
 module.exports.getURIParameter = (uri, name) ->
     return module.exports.getURIParameters(uri)[name]
+
+
+module.exports.getQueryParameters = ->
+    params = {}
+    query = window.location.search.substring(1)
+    for pair in query.split('&')
+        [name, value...] = pair.split("=")
+        params[name] = value.join('=')
+    return params
+
 
 module.exports.sendGetAsyncRequest = (url, call) ->
     req = new XMLHttpRequest()
@@ -50,11 +62,13 @@ module.exports.sendGetAsyncRequest = (url, call) ->
     req.open("GET", url, true)
     req.send()
 
+
 module.exports.sendGetSyncRequest = (url) ->
     req = new XMLHttpRequest()
     req.open("GET", url, false)
     req.send()
     return req
+
 
 module.exports.sendPostAsyncRequest = (url, call, query, header, headervalue) ->
     req = new XMLHttpRequest()
@@ -65,6 +79,7 @@ module.exports.sendPostAsyncRequest = (url, call, query, header, headervalue) ->
     if header and headervalue
         req.setRequestHeader(header, headervalue)
     req.send(query)
+
 
 module.exports.sendPostSyncRequest = (url, query, header, headervalue) ->
     req = new XMLHttpRequest()

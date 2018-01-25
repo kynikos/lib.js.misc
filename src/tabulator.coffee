@@ -16,18 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
-if not $? and not jQuery?
-    window.$ = window.jQuery = require('jquery')
-if not $.ui? and not jQuery.ui?
-    require("jquery-ui-browserify")
-if not $().tabulator? and not jQuery().tabulator?
-    require("jquery.tabulator")
-misc = require('./misc')
+$ = require('jquery')
+require("jquery-ui-browserify")
+require("jquery.tabulator")
+math = require('./math')
+{format_money} = require('./format')
 
 
 _money_formatter = (factor) ->
     return (value, data, cell, row, options) ->
-        return misc.format_money(parseFloat(value) * factor)
+        return format_money(parseFloat(value) * factor)
 
 
 _number_editor_input = (cell, value, units, decimals, post_process) ->
@@ -73,111 +71,112 @@ _number_editor = (units, decimals) ->
 _number_editor_multiply = (units, decimals, scale) ->
     return (cell, value) ->
         factor = 10 ** scale
-        value = misc.rounded_multiplication(value, factor, decimals)
+        value = math.rounded_multiplication(value, factor, decimals)
         return _number_editor_input(cell, value, units, decimals, (inputval) ->
             # Add scale to decimals, since the original number may have had
             # more decimal digits than 'decimals'
-            return misc.rounded_division(inputval, factor, decimals + scale)
+            return math.rounded_division(inputval, factor, decimals + scale)
         )
 
 
 _number_editor_divide = (units, decimals, scale) ->
     return (cell, value) ->
         divisor = 10 ** scale
-        value = misc.rounded_division(value, divisor, decimals)
+        value = math.rounded_division(value, divisor, decimals)
         return _number_editor_input(cell, value, units, decimals, (inputval) ->
-            misc.rounded_multiplication(inputval, divisor, decimals)
+            math.rounded_multiplication(inputval, divisor, decimals)
         )
 
 
 # Extend Tabulator http://olifolkerd.github.io/tabulator/docs/
-$.widget("ui.tabulator", $.ui.tabulator,
-    options: {}
+module.exports.extjQuery = ($) ->
+    $.widget("ui.tabulator", $.ui.tabulator,
+        options: {}
 
-    sorters:
-        'generic_ext': (a, b, aData, bData, field, dir) ->
-            if a < b
-                return -1
-            if a > b
-                return 1
-            return 0
+        sorters:
+            'generic_ext': (a, b, aData, bData, field, dir) ->
+                if a < b
+                    return -1
+                if a > b
+                    return 1
+                return 0
 
-        'number_ext': (a, b, aData, bData, field, dir) ->
-            if bData.always_sort_last? and bData.always_sort_last
-                return -1
-            if aData.always_sort_last? and aData.always_sort_last
-                return 1
-            return a - b
+            'number_ext': (a, b, aData, bData, field, dir) ->
+                if bData.always_sort_last? and bData.always_sort_last
+                    return -1
+                if aData.always_sort_last? and aData.always_sort_last
+                    return 1
+                return a - b
 
-        'istring_ext': (a, b, aData, bData, field, dir) ->
-            if bData.always_sort_last? and bData.always_sort_last
-                return -1
-            if aData.always_sort_last? and aData.always_sort_last
-                return 1
-            ai = a.toLowerCase()
-            bi = b.toLowerCase()
-            if ai < bi
-                return -1
-            if ai > bi
-                return 1
-            return 0
+            'istring_ext': (a, b, aData, bData, field, dir) ->
+                if bData.always_sort_last? and bData.always_sort_last
+                    return -1
+                if aData.always_sort_last? and aData.always_sort_last
+                    return 1
+                ai = a.toLowerCase()
+                bi = b.toLowerCase()
+                if ai < bi
+                    return -1
+                if ai > bi
+                    return 1
+                return 0
 
-    formatters:
-        'integer*1000': (value, data, cell, row, options) ->
-            return parseInt(value * 1000, 10)
+        formatters:
+            'integer*1000': (value, data, cell, row, options) ->
+                return parseInt(value * 1000, 10)
 
-        'integer/1000': (value, data, cell, row, options) ->
-            return misc.format_division(value, 1000, 0)
+            'integer/1000': (value, data, cell, row, options) ->
+                return math.format_division(value, 1000, 0)
 
-        'float*1000': (value, data, cell, row, options) ->
-            return value * 1000
+            'float*1000': (value, data, cell, row, options) ->
+                return value * 1000
 
-        'float.3*1000': (value, data, cell, row, options) ->
-            return parseFloat((value * 1000).toFixed(3))
+            'float.3*1000': (value, data, cell, row, options) ->
+                return parseFloat((value * 1000).toFixed(3))
 
-        'float.30*1000': (value, data, cell, row, options) ->
-            return (value * 1000).toFixed(3)
+            'float.30*1000': (value, data, cell, row, options) ->
+                return (value * 1000).toFixed(3)
 
-        'float.3/1000': (value, data, cell, row, options) ->
-            return misc.rounded_division(value, 1000, 3)
+            'float.3/1000': (value, data, cell, row, options) ->
+                return math.rounded_division(value, 1000, 3)
 
-        'float.30/1000': (value, data, cell, row, options) ->
-            return misc.format_division(value, 1000, 3)
+            'float.30/1000': (value, data, cell, row, options) ->
+                return math.format_division(value, 1000, 3)
 
-        'money*1000': _money_formatter(1000)
-        'money/1000': _money_formatter(1/1000)
+            'money*1000': _money_formatter(1000)
+            'money/1000': _money_formatter(1/1000)
 
-    editors:
-        'integer4': _number_editor(4, 0)
-        'integer4*1000': _number_editor_multiply(4, 0, 3)
-        'integer4/1000': _number_editor_divide(4, 0, 3)
-        'float4.2': _number_editor(4, 2)
-        'float4.2*1000': _number_editor_multiply(4, 2, 3)
-        'float4.2/1000': _number_editor_divide(4, 2, 3)
-        'float4.3': _number_editor(4, 3)
-        'float4.3*1000': _number_editor_multiply(4, 3, 3)
-        'float4.3/1000': _number_editor_divide(4, 3, 3)
+        editors:
+            'integer4': _number_editor(4, 0)
+            'integer4*1000': _number_editor_multiply(4, 0, 3)
+            'integer4/1000': _number_editor_divide(4, 0, 3)
+            'float4.2': _number_editor(4, 2)
+            'float4.2*1000': _number_editor_multiply(4, 2, 3)
+            'float4.2/1000': _number_editor_divide(4, 2, 3)
+            'float4.3': _number_editor(4, 3)
+            'float4.3*1000': _number_editor_multiply(4, 3, 3)
+            'float4.3/1000': _number_editor_divide(4, 3, 3)
 
-    mutators:
-        integer: (value, type, data) ->
-            return parseInt(value, 10)
+        mutators:
+            integer: (value, type, data) ->
+                return parseInt(value, 10)
 
-        float: (value, type, data) ->
-            return parseFloat(value)
+            float: (value, type, data) ->
+                return parseFloat(value)
 
-        boolean: (value, type, data) ->
-            return new Boolean(value)
+            boolean: (value, type, data) ->
+                return new Boolean(value)
 
-    accessors:
-        integer: (value, data) ->
-            return parseInt(value, 10)
+        accessors:
+            integer: (value, data) ->
+                return parseInt(value, 10)
 
-        float: (value, data) ->
-            return parseFloat(value)
+            float: (value, data) ->
+                return parseFloat(value)
 
-        boolean: (value, data) ->
-            return new Boolean(value)
-)
+            boolean: (value, data) ->
+                return new Boolean(value)
+    )
 
 
 class module.exports.Tabulator

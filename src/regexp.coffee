@@ -31,6 +31,7 @@ module.exports.escapePattern = (string) ->
     # safe to use prepareRegexpWhitespace in WM.Parser
     return string.replace(/[-[\]{}()^$*+?.|\\]/g, "\\$&")
 
+
 module.exports.matchAll = (source, regExp) ->
     result = []
     while true
@@ -45,6 +46,7 @@ module.exports.matchAll = (source, regExp) ->
         else
             break
     return result
+
 
 module.exports.matchAllConditional = (source, regExp, test) ->
     result = []

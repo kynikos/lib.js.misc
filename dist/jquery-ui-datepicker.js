@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -22,9 +22,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-if ((typeof $ === "undefined" || $ === null) && (typeof jQuery === "undefined" || jQuery === null)) {
-  window.$ = window.jQuery = require('jquery');
-}
+var $;
+
+$ = require('jquery');
 
 require("jquery-ui-browserify");
 
@@ -51,17 +51,17 @@ module.exports.DatePicker = function () {
   }
 
   _createClass(DatePicker, [{
-    key: "show",
+    key: 'show',
     value: function show() {
       return this.input.datepicker('show');
     }
   }, {
-    key: "hide",
+    key: 'hide',
     value: function hide() {
       return this.input.datepicker('hide');
     }
   }, {
-    key: "set_date",
+    key: 'set_date',
     value: function set_date(date) {
       if (typeof date === 'string') {
         date = $.datepicker.parseDate('yy-mm-dd', date);
@@ -69,17 +69,17 @@ module.exports.DatePicker = function () {
       return this.input.datepicker("setDate", date);
     }
   }, {
-    key: "get_date",
+    key: 'get_date',
     value: function get_date() {
       return this.input.val();
     }
   }, {
-    key: "enable",
+    key: 'enable',
     value: function enable() {
       return this.display.removeAttr('disabled');
     }
   }, {
-    key: "disable",
+    key: 'disable',
     value: function disable() {
       this.input.datepicker("setDate", null);
       return this.display.attr('disabled', 'true');

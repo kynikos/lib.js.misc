@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -26,11 +26,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-var TableSettings, TableSettingsNoSpan, TableSettingsRowspan;
+var $, TableSettings, TableSettingsNoSpan, TableSettingsRowspan;
 
-if ((typeof $ === "undefined" || $ === null) && (typeof jQuery === "undefined" || jQuery === null)) {
-  window.$ = window.jQuery = require('jquery');
-}
+$ = require('jquery');
 
 TableSettings = function TableSettings(table) {
   _classCallCheck(this, TableSettings);
@@ -83,14 +81,14 @@ TableSettingsNoSpan = function (_TableSettings) {
   }
 
   _createClass(TableSettingsNoSpan, [{
-    key: "_showField",
+    key: '_showField',
     value: function _showField(index) {
       var filter;
       filter = ':nth-of-type(' + (index + 1) + ')';
       return this.table.find('th' + filter + ', td' + filter).show();
     }
   }, {
-    key: "_hideField",
+    key: '_hideField',
     value: function _hideField(index) {
       var filter;
       filter = ':nth-of-type(' + (index + 1) + ')';
@@ -111,12 +109,12 @@ TableSettingsRowspan = function (_TableSettings2) {
   }
 
   _createClass(TableSettingsRowspan, [{
-    key: "_showField",
+    key: '_showField',
     value: function _showField(index) {
       return this.table.find('.col' + index).show();
     }
   }, {
-    key: "_hideField",
+    key: '_hideField',
     value: function _hideField(index) {
       return this.table.find('.col' + index).hide();
     }
@@ -125,55 +123,55 @@ TableSettingsRowspan = function (_TableSettings2) {
   return TableSettingsRowspan;
 }(TableSettings);
 
-$.fn.addTableSettings = function () {
-  return this.each(function () {
-    if ($(this).hasClass('hideable-fields-nospan')) {
-      new TableSettingsNoSpan($(this));
-    } else if ($(this).hasClass('hideable-fields-rowspan')) {
-      new TableSettingsRowspan($(this));
-    }
-    return $(this);
-  });
-};
-
-$.fn.prependTableDataRows = function () {
-  for (var _len = arguments.length, rows = Array(_len), _key = 0; _key < _len; _key++) {
-    rows[_key] = arguments[_key];
-  }
-
-  return this.each(function () {
-    var cell, i, j, len, len1, row, tr;
-    // TODO: Check if this is a table, thead, tbody or tfoot?
-    for (i = 0, len = rows.length; i < len; i++) {
-      row = rows[i];
-      tr = $('<tr>');
-      for (j = 0, len1 = row.length; j < len1; j++) {
-        cell = row[j];
-        tr.append($('<td>').append(cell));
+module.exports.extjQuery = function ($) {
+  $.fn.addTableSettings = function () {
+    return this.each(function () {
+      if ($(this).hasClass('hideable-fields-nospan')) {
+        new TableSettingsNoSpan($(this));
+      } else if ($(this).hasClass('hideable-fields-rowspan')) {
+        new TableSettingsRowspan($(this));
       }
-      $(this).prepend(tr);
+      return $(this);
+    });
+  };
+  $.fn.prependTableDataRows = function () {
+    for (var _len = arguments.length, rows = Array(_len), _key = 0; _key < _len; _key++) {
+      rows[_key] = arguments[_key];
     }
-    return $(this);
-  });
-};
 
-$.fn.appendTableDataRows = function () {
-  for (var _len2 = arguments.length, rows = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-    rows[_key2] = arguments[_key2];
-  }
-
-  return this.each(function () {
-    var cell, i, j, len, len1, row, tr;
-    // TODO: Check if this is a table, thead, tbody or tfoot?
-    for (i = 0, len = rows.length; i < len; i++) {
-      row = rows[i];
-      tr = $('<tr>');
-      for (j = 0, len1 = row.length; j < len1; j++) {
-        cell = row[j];
-        tr.append($('<td>').append(cell));
+    return this.each(function () {
+      var cell, i, j, len, len1, row, tr;
+      // TODO: Check if this is a table, thead, tbody or tfoot?
+      for (i = 0, len = rows.length; i < len; i++) {
+        row = rows[i];
+        tr = $('<tr>');
+        for (j = 0, len1 = row.length; j < len1; j++) {
+          cell = row[j];
+          tr.append($('<td>').append(cell));
+        }
+        $(this).prepend(tr);
       }
-      $(this).append(tr);
+      return $(this);
+    });
+  };
+  return $.fn.appendTableDataRows = function () {
+    for (var _len2 = arguments.length, rows = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      rows[_key2] = arguments[_key2];
     }
-    return $(this);
-  });
+
+    return this.each(function () {
+      var cell, i, j, len, len1, row, tr;
+      // TODO: Check if this is a table, thead, tbody or tfoot?
+      for (i = 0, len = rows.length; i < len; i++) {
+        row = rows[i];
+        tr = $('<tr>');
+        for (j = 0, len1 = row.length; j < len1; j++) {
+          cell = row[j];
+          tr.append($('<td>').append(cell));
+        }
+        $(this).append(tr);
+      }
+      return $(this);
+    });
+  };
 };

@@ -16,16 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
-if not $? and not jQuery?
-    window.$ = window.jQuery = require('jquery')
-if not $().modal? and not jQuery().modal?
-    require('bootstrap')
-if not $().datepicker? and not jQuery().datepicker
-    require('bootstrap-datepicker')
+$ = require('jquery')
+require('bootstrap')
+require('bootstrap-datepicker')
 
 
 class BootstrapDatePickerAltDisplay
-    constructor: (config={}, dpconfig={}) ->
+    constructor: (config = {}, dpconfig = {}) ->
         config.format_date ?= (widget) =>
             return widget.get_date()
 
@@ -81,19 +78,20 @@ class BootstrapDatePickerAltDisplay
         return @picker.datepicker('setDate', date)
 
 
-$.fn.bootstrapDatepickerAltDisplay = (args...) ->
-    @each( ->
-        if typeof args[0] is 'string'
-            widget = $(this).data('widget')
-            # BUG: This is broken because the main
-            #      bootstrapDatepickerAltDisplay method returns @each
-            return widget.picker.datepicker(args...)
-        config = args[0] ? {}
-        dpconfig = args[1] ? {}
-        widget  = new BootstrapDatePickerAltDisplay(config, dpconfig)
-        return $(this)
-            .data('widget', widget)
-            # Append the picker before the display, so that the popup appears
-            # on the left
-            .append(widget.picker, widget.display)
-    )
+module.exports.extjQuery = ($) ->
+    $.fn.bootstrapDatepickerAltDisplay = (args...) ->
+        @each( ->
+            if typeof args[0] is 'string'
+                widget = $(this).data('widget')
+                # BUG: This is broken because the main
+                #      bootstrapDatepickerAltDisplay method returns @each
+                return widget.picker.datepicker(args...)
+            config = args[0] ? {}
+            dpconfig = args[1] ? {}
+            widget  = new BootstrapDatePickerAltDisplay(config, dpconfig)
+            return $(this)
+                .data('widget', widget)
+                # Append the picker before the display, so that the popup
+                # appears on the left
+                .append(widget.picker, widget.display)
+        )

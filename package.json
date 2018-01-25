@@ -11,13 +11,13 @@
   "scripts": {
     "compile": "coffee --compile --transpile --bare --output ./dist/ ./src/*.coffee"
   },
-  "dependencies": {
+  "optionalDependencies": {
     "bootstrap": "^3.3.7",
     "bootstrap-datepicker": "^1.7.1",
     "bootstrap-table": "^1.11.2",
     "hyperscript": "^2.0.2",
     "hyperscript-helpers": "^3.0.3",
-    "jquery": "^3.2.1",
+    "jquery": "^3.3.1",
     "jquery-ui-browserify": "^1.11.0-pre-seelio",
     "jquery.tabulator": "<3.0.0",
     "papaparse": "^4.3.6"

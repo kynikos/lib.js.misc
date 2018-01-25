@@ -17,16 +17,23 @@
 # along with JavaScript auxiliary library.
 # If not, see <http://www.gnu.org/licenses/>.
 
+try
+    $ = require('jquery')
+catch error
+    $ = null
+
 
 module.exports.getPreviousElementSibling = (node) ->
     while node.previousSibling.nodeType != 1
         node = node.previousSibling
     return node.previousSibling
 
+
 module.exports.getNextElementSibling = (node) ->
     while node.nextSibling.nodeType != 1
         node = node.nextSibling
     return node.nextSibling
+
 
 module.exports.getFirstElementChild = (node) ->
     if node.firstChild.nodeType == 1
@@ -34,11 +41,13 @@ module.exports.getFirstElementChild = (node) ->
     else
         return module.exports.getNextElementSibling(node.firstChild)
 
+
 module.exports.getLastElementChild = (node) ->
     if node.lastChild.nodeType == 1
         return node.lastChild
     else
         return module.exports.getPreviousElementSibling(node.lastChild)
+
 
 module.exports.getChildElements = (node) ->
     list = element.childNodes
@@ -48,6 +57,7 @@ module.exports.getChildElements = (node) ->
             children.push(child)
     return children
 
+
 module.exports.getChildrenByTagName = (element, tag) ->
     list = element.childNodes
     children = []
@@ -56,6 +66,7 @@ module.exports.getChildrenByTagName = (element, tag) ->
         if localName and localName.toLowerCase() == tag.toLowerCase()
             children.push(child)
     return children
+
 
 module.exports.isDescendantOf = (descendant, ancestor, identity) ->
     response = false
@@ -69,12 +80,14 @@ module.exports.isDescendantOf = (descendant, ancestor, identity) ->
             descendant = descendant.parentNode
     return response
 
+
 module.exports.getSiblingPositionByTagName = (element) ->
     i = 0
     siblings = module.exports.getChildrenByTagName(element.parentNode, element.localName)
     while not siblings[i].isSameNode(element)
         i++
     return if i < siblings.length then i else -1
+
 
 module.exports.getLongTextNode = (element) ->
     # Firefox and other browsers split long text into multiple text nodes
@@ -85,12 +98,12 @@ module.exports.getLongTextNode = (element) ->
             text += child.nodeValue
     return text
 
-module.exports.waitUntilJQuerySelectorMatches = (selector, handler, args, interval) ->
+if $
     # TODO: turn into a jQuery plugin
-    $ = require('jquery')
-    recurse = ->
-        if $(selector)[0]
-            handler(args)
-        else
-            setTimeout(recurse, interval)
-    recurse()
+    module.exports.waitUntilJQuerySelectorMatches = (selector, handler, args, interval) ->
+        recurse = ->
+            if $(selector)[0]
+                handler(args)
+            else
+                setTimeout(recurse, interval)
+        recurse()

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -22,19 +22,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-var BootstrapDatePickerAltDisplay;
+var $, BootstrapDatePickerAltDisplay;
 
-if ((typeof $ === "undefined" || $ === null) && (typeof jQuery === "undefined" || jQuery === null)) {
-  window.$ = window.jQuery = require('jquery');
-}
+$ = require('jquery');
 
-if ($().modal == null && jQuery().modal == null) {
-  require('bootstrap');
-}
+require('bootstrap');
 
-if ($().datepicker == null && !jQuery().datepicker) {
-  require('bootstrap-datepicker');
-}
+require('bootstrap-datepicker');
 
 BootstrapDatePickerAltDisplay = function () {
   function BootstrapDatePickerAltDisplay() {
@@ -89,12 +83,12 @@ BootstrapDatePickerAltDisplay = function () {
   }
 
   _createClass(BootstrapDatePickerAltDisplay, [{
-    key: "get_date",
+    key: 'get_date',
     value: function get_date() {
       return this.picker.datepicker('getDate');
     }
   }, {
-    key: "set_date",
+    key: 'set_date',
     value: function set_date(date) {
       if (typeof date === 'string') {
         date = new Date(date);
@@ -106,26 +100,28 @@ BootstrapDatePickerAltDisplay = function () {
   return BootstrapDatePickerAltDisplay;
 }();
 
-$.fn.bootstrapDatepickerAltDisplay = function () {
-  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
-  }
-
-  return this.each(function () {
-    var config, dpconfig, ref, ref1, widget;
-    if (typeof args[0] === 'string') {
-      var _widget$picker;
-
-      widget = $(this).data('widget');
-      // BUG: This is broken because the main
-      //      bootstrapDatepickerAltDisplay method returns @each
-      return (_widget$picker = widget.picker).datepicker.apply(_widget$picker, args);
+module.exports.extjQuery = function ($) {
+  return $.fn.bootstrapDatepickerAltDisplay = function () {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
-    config = (ref = args[0]) != null ? ref : {};
-    dpconfig = (ref1 = args[1]) != null ? ref1 : {};
-    widget = new BootstrapDatePickerAltDisplay(config, dpconfig);
-    // Append the picker before the display, so that the popup appears
-    // on the left
-    return $(this).data('widget', widget).append(widget.picker, widget.display);
-  });
+
+    return this.each(function () {
+      var config, dpconfig, ref, ref1, widget;
+      if (typeof args[0] === 'string') {
+        var _widget$picker;
+
+        widget = $(this).data('widget');
+        // BUG: This is broken because the main
+        //      bootstrapDatepickerAltDisplay method returns @each
+        return (_widget$picker = widget.picker).datepicker.apply(_widget$picker, args);
+      }
+      config = (ref = args[0]) != null ? ref : {};
+      dpconfig = (ref1 = args[1]) != null ? ref1 : {};
+      widget = new BootstrapDatePickerAltDisplay(config, dpconfig);
+      // Append the picker before the display, so that the popup
+      // appears on the left
+      return $(this).data('widget', widget).append(widget.picker, widget.display);
+    });
+  };
 };

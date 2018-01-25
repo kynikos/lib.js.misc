@@ -22,31 +22,32 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-var _money_formatter,
+var $,
+    _money_formatter,
     _number_editor,
     _number_editor_divide,
     _number_editor_input,
     _number_editor_multiply,
-    misc,
+    format_money,
+    math,
     indexOf = [].indexOf;
 
-if ((typeof $ === "undefined" || $ === null) && (typeof jQuery === "undefined" || jQuery === null)) {
-  window.$ = window.jQuery = require('jquery');
-}
+$ = require('jquery');
 
-if ($.ui == null && jQuery.ui == null) {
-  require("jquery-ui-browserify");
-}
+require("jquery-ui-browserify");
 
-if ($().tabulator == null && jQuery().tabulator == null) {
-  require("jquery.tabulator");
-}
+require("jquery.tabulator");
 
-misc = require('./misc');
+math = require('./math');
+
+var _require = require('./format');
+
+format_money = _require.format_money;
+
 
 _money_formatter = function _money_formatter(factor) {
   return function (value, data, cell, row, options) {
-    return misc.format_money(parseFloat(value) * factor);
+    return format_money(parseFloat(value) * factor);
   };
 };
 
@@ -92,11 +93,11 @@ _number_editor_multiply = function _number_editor_multiply(units, decimals, scal
   return function (cell, value) {
     var factor;
     factor = Math.pow(10, scale);
-    value = misc.rounded_multiplication(value, factor, decimals);
+    value = math.rounded_multiplication(value, factor, decimals);
     return _number_editor_input(cell, value, units, decimals, function (inputval) {
       // Add scale to decimals, since the original number may have had
       // more decimal digits than 'decimals'
-      return misc.rounded_division(inputval, factor, decimals + scale);
+      return math.rounded_division(inputval, factor, decimals + scale);
     });
   };
 };
@@ -105,113 +106,115 @@ _number_editor_divide = function _number_editor_divide(units, decimals, scale) {
   return function (cell, value) {
     var divisor;
     divisor = Math.pow(10, scale);
-    value = misc.rounded_division(value, divisor, decimals);
+    value = math.rounded_division(value, divisor, decimals);
     return _number_editor_input(cell, value, units, decimals, function (inputval) {
-      return misc.rounded_multiplication(inputval, divisor, decimals);
+      return math.rounded_multiplication(inputval, divisor, decimals);
     });
   };
 };
 
 // Extend Tabulator http://olifolkerd.github.io/tabulator/docs/
-$.widget("ui.tabulator", $.ui.tabulator, {
-  options: {},
-  sorters: {
-    'generic_ext': function generic_ext(a, b, aData, bData, field, dir) {
-      if (a < b) {
-        return -1;
+module.exports.extjQuery = function ($) {
+  return $.widget("ui.tabulator", $.ui.tabulator, {
+    options: {},
+    sorters: {
+      'generic_ext': function generic_ext(a, b, aData, bData, field, dir) {
+        if (a < b) {
+          return -1;
+        }
+        if (a > b) {
+          return 1;
+        }
+        return 0;
+      },
+      'number_ext': function number_ext(a, b, aData, bData, field, dir) {
+        if (bData.always_sort_last != null && bData.always_sort_last) {
+          return -1;
+        }
+        if (aData.always_sort_last != null && aData.always_sort_last) {
+          return 1;
+        }
+        return a - b;
+      },
+      'istring_ext': function istring_ext(a, b, aData, bData, field, dir) {
+        var ai, bi;
+        if (bData.always_sort_last != null && bData.always_sort_last) {
+          return -1;
+        }
+        if (aData.always_sort_last != null && aData.always_sort_last) {
+          return 1;
+        }
+        ai = a.toLowerCase();
+        bi = b.toLowerCase();
+        if (ai < bi) {
+          return -1;
+        }
+        if (ai > bi) {
+          return 1;
+        }
+        return 0;
       }
-      if (a > b) {
-        return 1;
-      }
-      return 0;
     },
-    'number_ext': function number_ext(a, b, aData, bData, field, dir) {
-      if (bData.always_sort_last != null && bData.always_sort_last) {
-        return -1;
-      }
-      if (aData.always_sort_last != null && aData.always_sort_last) {
-        return 1;
-      }
-      return a - b;
+    formatters: {
+      'integer*1000': function integer1000(value, data, cell, row, options) {
+        return parseInt(value * 1000, 10);
+      },
+      'integer/1000': function integer1000(value, data, cell, row, options) {
+        return math.format_division(value, 1000, 0);
+      },
+      'float*1000': function float1000(value, data, cell, row, options) {
+        return value * 1000;
+      },
+      'float.3*1000': function float31000(value, data, cell, row, options) {
+        return parseFloat((value * 1000).toFixed(3));
+      },
+      'float.30*1000': function float301000(value, data, cell, row, options) {
+        return (value * 1000).toFixed(3);
+      },
+      'float.3/1000': function float31000(value, data, cell, row, options) {
+        return math.rounded_division(value, 1000, 3);
+      },
+      'float.30/1000': function float301000(value, data, cell, row, options) {
+        return math.format_division(value, 1000, 3);
+      },
+      'money*1000': _money_formatter(1000),
+      'money/1000': _money_formatter(1 / 1000)
     },
-    'istring_ext': function istring_ext(a, b, aData, bData, field, dir) {
-      var ai, bi;
-      if (bData.always_sort_last != null && bData.always_sort_last) {
-        return -1;
+    editors: {
+      'integer4': _number_editor(4, 0),
+      'integer4*1000': _number_editor_multiply(4, 0, 3),
+      'integer4/1000': _number_editor_divide(4, 0, 3),
+      'float4.2': _number_editor(4, 2),
+      'float4.2*1000': _number_editor_multiply(4, 2, 3),
+      'float4.2/1000': _number_editor_divide(4, 2, 3),
+      'float4.3': _number_editor(4, 3),
+      'float4.3*1000': _number_editor_multiply(4, 3, 3),
+      'float4.3/1000': _number_editor_divide(4, 3, 3)
+    },
+    mutators: {
+      integer: function integer(value, type, data) {
+        return parseInt(value, 10);
+      },
+      float: function float(value, type, data) {
+        return parseFloat(value);
+      },
+      boolean: function boolean(value, type, data) {
+        return new Boolean(value);
       }
-      if (aData.always_sort_last != null && aData.always_sort_last) {
-        return 1;
+    },
+    accessors: {
+      integer: function integer(value, data) {
+        return parseInt(value, 10);
+      },
+      float: function float(value, data) {
+        return parseFloat(value);
+      },
+      boolean: function boolean(value, data) {
+        return new Boolean(value);
       }
-      ai = a.toLowerCase();
-      bi = b.toLowerCase();
-      if (ai < bi) {
-        return -1;
-      }
-      if (ai > bi) {
-        return 1;
-      }
-      return 0;
     }
-  },
-  formatters: {
-    'integer*1000': function integer1000(value, data, cell, row, options) {
-      return parseInt(value * 1000, 10);
-    },
-    'integer/1000': function integer1000(value, data, cell, row, options) {
-      return misc.format_division(value, 1000, 0);
-    },
-    'float*1000': function float1000(value, data, cell, row, options) {
-      return value * 1000;
-    },
-    'float.3*1000': function float31000(value, data, cell, row, options) {
-      return parseFloat((value * 1000).toFixed(3));
-    },
-    'float.30*1000': function float301000(value, data, cell, row, options) {
-      return (value * 1000).toFixed(3);
-    },
-    'float.3/1000': function float31000(value, data, cell, row, options) {
-      return misc.rounded_division(value, 1000, 3);
-    },
-    'float.30/1000': function float301000(value, data, cell, row, options) {
-      return misc.format_division(value, 1000, 3);
-    },
-    'money*1000': _money_formatter(1000),
-    'money/1000': _money_formatter(1 / 1000)
-  },
-  editors: {
-    'integer4': _number_editor(4, 0),
-    'integer4*1000': _number_editor_multiply(4, 0, 3),
-    'integer4/1000': _number_editor_divide(4, 0, 3),
-    'float4.2': _number_editor(4, 2),
-    'float4.2*1000': _number_editor_multiply(4, 2, 3),
-    'float4.2/1000': _number_editor_divide(4, 2, 3),
-    'float4.3': _number_editor(4, 3),
-    'float4.3*1000': _number_editor_multiply(4, 3, 3),
-    'float4.3/1000': _number_editor_divide(4, 3, 3)
-  },
-  mutators: {
-    integer: function integer(value, type, data) {
-      return parseInt(value, 10);
-    },
-    float: function float(value, type, data) {
-      return parseFloat(value);
-    },
-    boolean: function boolean(value, type, data) {
-      return new Boolean(value);
-    }
-  },
-  accessors: {
-    integer: function integer(value, data) {
-      return parseInt(value, 10);
-    },
-    float: function float(value, data) {
-      return parseFloat(value);
-    },
-    boolean: function boolean(value, data) {
-      return new Boolean(value);
-    }
-  }
-});
+  });
+};
 
 module.exports.Tabulator = function () {
   function Tabulator(config1, tabulator_config) {

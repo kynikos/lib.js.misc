@@ -22,13 +22,16 @@ module.exports.insert = (string, newString, id) ->
     id ?= 0
     return string.substring(0, id) + newString + string.substr(id)
 
+
 module.exports.overwriteFor = (string, newString, id, length) ->
     id ?= 0
     if not length or length < 0 then length = 0
     return string.substring(0, id) + newString + string.substr(id + length)
 
+
 module.exports.overwriteAt = (string, newString, id) ->
     return module.exports.overwriteFor(string, newString, id, newString.length)
+
 
 module.exports.overwriteBetween = (string, newString, id1, id2) ->
     id1 ?= 0
@@ -39,21 +42,26 @@ module.exports.overwriteBetween = (string, newString, id1, id2) ->
         id1 = tempid
     return string.substring(0, id1) + newString + string.substr(id2)
 
+
 module.exports.removeFor = (string, id, length) ->
     return module.exports.overwriteFor(string, "", id, length)
 
+
 module.exports.removeBetween = (string, id1, id2) ->
     return module.exports.overwriteBetween(string, "", id1, id2)
+
 
 module.exports.padLeft = (string, filler, length) ->
     while string.length < length
         string = filler + string
     return string
 
+
 module.exports.padRight = (string, filler, length) ->
     while string.length < length
         string += filler
     return string
+
 
 module.exports.findSimpleEnclosures = (string, openTag, openLength,
                                                 closeTag, closeLength) ->
@@ -93,6 +101,7 @@ module.exports.findSimpleEnclosures = (string, openTag, openLength,
             break
 
     return results
+
 
 module.exports.findNestedEnclosures = (string, openTag, closeTag, maskChar) ->
     # openTag and closeTag must be strings, *not* regular expressions,
@@ -138,6 +147,7 @@ module.exports.findNestedEnclosures = (string, openTag, closeTag, maskChar) ->
             break
 
     return [results, maskedString]
+
 
 module.exports.findInnermostEnclosures = (string, openTag, closeTag) ->
     # openTag and closeTag must be strings, *not* regular expressions,

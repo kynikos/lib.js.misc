@@ -19,6 +19,15 @@
 // You should have received a copy of the GNU General Public License
 // along with JavaScript auxiliary library.
 // If not, see <http://www.gnu.org/licenses/>.
+var $, error;
+
+try {
+  $ = require('jquery');
+} catch (error1) {
+  error = error1;
+  $ = null;
+}
+
 module.exports.getPreviousElementSibling = function (node) {
   while (node.previousSibling.nodeType !== 1) {
     node = node.previousSibling;
@@ -121,16 +130,17 @@ module.exports.getLongTextNode = function (element) {
   return text;
 };
 
-module.exports.waitUntilJQuerySelectorMatches = function (selector, handler, args, interval) {
-  var $, _recurse;
+if ($) {
   // TODO: turn into a jQuery plugin
-  $ = require('jquery');
-  _recurse = function recurse() {
-    if ($(selector)[0]) {
-      return handler(args);
-    } else {
-      return setTimeout(_recurse, interval);
-    }
+  module.exports.waitUntilJQuerySelectorMatches = function (selector, handler, args, interval) {
+    var _recurse;
+    _recurse = function recurse() {
+      if ($(selector)[0]) {
+        return handler(args);
+      } else {
+        return setTimeout(_recurse, interval);
+      }
+    };
+    return _recurse();
   };
-  return _recurse();
-};
+}

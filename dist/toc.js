@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -22,11 +22,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-var EnhancedHeading;
+var $, EnhancedHeading;
 
-if ((typeof $ === "undefined" || $ === null) && (typeof jQuery === "undefined" || jQuery === null)) {
-  window.$ = window.jQuery = require('jquery');
-}
+$ = require('jquery');
 
 module.exports.TableOfContents = function () {
   function TableOfContents() {
@@ -43,7 +41,7 @@ module.exports.TableOfContents = function () {
   }
 
   _createClass(TableOfContents, [{
-    key: "refresh",
+    key: 'refresh',
     value: function refresh() {
       var currhlevel, currul, tocheaderfound;
       this.rootul.empty();
@@ -114,9 +112,11 @@ EnhancedHeading = function () {
   return EnhancedHeading;
 }.call(undefined);
 
-$.fn.enhanceHeading = function () {
-  return this.each(function () {
-    new EnhancedHeading($(this));
-    return $(this);
-  });
+module.exports.extjQuery = function ($) {
+  return $.fn.enhanceHeading = function () {
+    return this.each(function () {
+      new EnhancedHeading($(this));
+      return $(this);
+    });
+  };
 };

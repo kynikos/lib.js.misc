@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
-if not $? and not jQuery?
-    window.$ = window.jQuery = require('jquery')
+$ = require('jquery')
 
 
 class TableSettings
@@ -96,35 +95,36 @@ class TableSettingsRowspan extends TableSettings
         @table.find('.col' + index).hide()
 
 
-$.fn.addTableSettings = ->
-    @each( ->
-        if $(this).hasClass('hideable-fields-nospan')
-            new TableSettingsNoSpan($(this))
-        else if $(this).hasClass('hideable-fields-rowspan')
-            new TableSettingsRowspan($(this))
-        return $(this)
-    )
+module.exports.extjQuery = ($) ->
+    $.fn.addTableSettings = ->
+        @each( ->
+            if $(this).hasClass('hideable-fields-nospan')
+                new TableSettingsNoSpan($(this))
+            else if $(this).hasClass('hideable-fields-rowspan')
+                new TableSettingsRowspan($(this))
+            return $(this)
+        )
 
 
-$.fn.prependTableDataRows = (rows...) ->
-    @each( ->
-        # TODO: Check if this is a table, thead, tbody or tfoot?
-        for row in rows
-            tr = $('<tr>')
-            for cell in row
-                tr.append($('<td>').append(cell))
-            $(this).prepend(tr)
-        return $(this)
-    )
+    $.fn.prependTableDataRows = (rows...) ->
+        @each( ->
+            # TODO: Check if this is a table, thead, tbody or tfoot?
+            for row in rows
+                tr = $('<tr>')
+                for cell in row
+                    tr.append($('<td>').append(cell))
+                $(this).prepend(tr)
+            return $(this)
+        )
 
 
-$.fn.appendTableDataRows = (rows...) ->
-    @each( ->
-        # TODO: Check if this is a table, thead, tbody or tfoot?
-        for row in rows
-            tr = $('<tr>')
-            for cell in row
-                tr.append($('<td>').append(cell))
-            $(this).append(tr)
-        return $(this)
-    )
+    $.fn.appendTableDataRows = (rows...) ->
+        @each( ->
+            # TODO: Check if this is a table, thead, tbody or tfoot?
+            for row in rows
+                tr = $('<tr>')
+                for cell in row
+                    tr.append($('<td>').append(cell))
+                $(this).append(tr)
+            return $(this)
+        )

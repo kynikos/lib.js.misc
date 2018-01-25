@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24,13 +24,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-var h,
+var $,
+    h,
     misc,
     indexOf = [].indexOf;
 
-if ((typeof $ === "undefined" || $ === null) && (typeof jQuery === "undefined" || jQuery === null)) {
-  window.$ = window.jQuery = require('jquery');
-}
+$ = require('jquery');
 
 h = require('hyperscript');
 
@@ -89,8 +88,8 @@ module.exports.WeekDaySelector = function () {
     ref = misc.WEEKDAYS_SHORT;
     for (index = i = 0, len = ref.length; i < len; index = ++i) {
       wday = ref[index];
-      id = baseid + "-" + index;
-      name = "" + baseid;
+      id = baseid + '-' + index;
+      name = '' + baseid;
       input = $('<input>').attr({
         'type': radio ? 'radio' : 'checkbox',
         'name': name,
@@ -104,7 +103,7 @@ module.exports.WeekDaySelector = function () {
   }
 
   _createClass(WeekDaySelector, [{
-    key: "get_days",
+    key: 'get_days',
     value: function get_days() {
       var days, i, input, len, ref;
       days = [];

@@ -16,14 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
-if not $? and not jQuery?
-    window.$ = window.jQuery = require('jquery')
-if not $().modal? and not jQuery().modal?
-    require('bootstrap')
-if not $().bootstrapTable? and not jQuery().bootstrapTable
-    require('bootstrap-table')
-if not Papa?
-    Papa = require('papaparse')
+$ = require('jquery')
+require('bootstrap')
+require('bootstrap-table')
+Papa = require('papaparse')
 
 
 # TODO: Change this to a proper BootstrapTable extension
@@ -66,7 +62,7 @@ module.exports.exportBootstrapTableToCSV = (table, button) ->
         fields: (field.title for field in fields)
         data: rows
     )
-    blob = new Blob([csv], {type:'text/csv'})
+    blob = new Blob([csv], {type: 'text/csv'})
     link = $("<a>")
         .attr(
             "download": options.CSVexportFileName

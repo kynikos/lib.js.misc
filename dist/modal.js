@@ -23,9 +23,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
-// BUG: For some reason requiring jquery here gives an error...
-// if not $? and not jQuery?
-//     window.$ = window.jQuery = require('jquery')
+// BUG: For some reason requiring jquery here gives an error? ####################################
+var $;
+
+$ = require('jquery');
+
 module.exports.Modal = function () {
   function Modal(header, content) {
     var _this = this;
