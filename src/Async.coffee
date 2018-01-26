@@ -73,74 +73,64 @@ module.exports.recurseTreeAsync = (params) ->
     #
     # callEnd(params) {}
 
-    if params.stage is undefined
-        params.parentIndex = null
-        params.siblingIndex = 0
-        params.ancestors = []
-        params.children = []
-        params.nodesList = []
-        params.stage = 1
-        @recurseTreeAsync(params)
-    else
-        # TODO: Convert to CoffeeScript
-        `
-        switch (params.stage) {
-            case 1:
-                params.stage = 2;
-                // Prevent infinite loops
-                if (params.ancestors.indexOf(params.node) == -1) {
-                    params.callChildren(params);
-                    break;
-                }
-                else {
-                    params.children = "loop";
-                    // Do not break here!!!
-                }
-            case 2:
-                params.nodesList.push({
-                    node: params.node,
-                    parentIndex: params.parentIndex,
-                    siblingIndex: params.siblingIndex,
-                    ancestors: params.ancestors.slice(0),
-                    children: params.children.slice(0),
-                });
-                params.stage = 3;
-                params.callNode(params);
-                break;
-            case 3:
-                if (params.children.length && params.children != "loop") {
-                    // Go to the first child
-                    params.ancestors.push(params.node);
-                    params.node = params.children[0];
-                    params.parentIndex = params.nodesList.length - 1;
-                    params.siblingIndex = 0;
-                    params.children = [];
-                    params.stage = 1;
-                    this.recurseTreeAsync(params);
-                }
-                else if (params.parentIndex != null) {
-                    // Go to the next sibling
-                    var parent = params.nodesList[params.parentIndex];
-                    params.siblingIndex++;
-                    params.node = parent.children[params.siblingIndex];
-                    params.children = [];
-                    if (params.node) {
-                        params.stage = 1;
-                    }
-                    else {
-                        // There are no more siblings
-                        params.node = parent.node;
-                        params.parentIndex = parent.parentIndex;
-                        params.siblingIndex = parent.siblingIndex;
-                        params.ancestors = parent.ancestors.slice(0);
-                        params.stage = 3;
-                    }
-                    this.recurseTreeAsync(params);
-                }
-                else {
-                    // End of recursion
-                    params.callEnd(params);
-                }
-                break;
-        }
-        `
+    switch params.stage
+        when undefined
+            params.parentIndex = null
+            params.siblingIndex = 0
+            params.ancestors = []
+            params.children = []
+            params.nodesList = []
+            params.stage = 1
+            @recurseTreeAsync(params)
+
+        when 1
+            params.stage = 2
+            # Prevent infinite loops
+            if params.ancestors.indexOf(params.node) is -1
+                params.callChildren(params)
+            else
+                params.children = "loop"
+                @recurseTreeAsync(params)
+
+        when 2
+            params.nodesList.push(
+                node: params.node
+                parentIndex: params.parentIndex
+                siblingIndex: params.siblingIndex
+                ancestors: params.ancestors.slice(0)
+                children: params.children.slice(0)
+            )
+            params.stage = 3
+            params.callNode(params)
+
+        when 3
+            if params.children.length and params.children isnt "loop"
+                # Go to the first child
+                params.ancestors.push(params.node)
+                params.node = params.children[0]
+                params.parentIndex = params.nodesList.length - 1
+                params.siblingIndex = 0
+                params.children = []
+                params.stage = 1
+                @recurseTreeAsync(params)
+
+            else if params.parentIndex isnt null
+                # Go to the next sibling
+                parent = params.nodesList[params.parentIndex]
+                params.siblingIndex++
+                params.node = parent.children[params.siblingIndex]
+                params.children = []
+                if params.node
+                    params.stage = 1
+                else
+                    # There are no more siblings
+                    params.node = parent.node
+                    params.parentIndex = parent.parentIndex
+                    params.siblingIndex = parent.siblingIndex
+                    params.ancestors = parent.ancestors.slice(0)
+                    params.stage = 3
+                @recurseTreeAsync(params)
+
+            else
+                # End of recursion
+                params.callEnd(params)
