@@ -481,11 +481,10 @@ module.exports.Tabulator = function () {
 
       this.on_saving();
       this.show_loader();
-      if (this.config.api_submit_action != null) {
+      if (this.config.api_submit_url != null) {
         $.post({
-          url: '/api/',
+          url: this.config.api_submit_url,
           data: {
-            action: this.config.api_submit_action,
             data: JSON.stringify(this.tabulator.tabulator("getData"))
           },
           success: function success(data, textStatus, jqXHR) {

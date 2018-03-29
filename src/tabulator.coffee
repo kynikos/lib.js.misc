@@ -429,11 +429,10 @@ class module.exports.Tabulator
     save: =>
         @on_saving()
         @show_loader()
-        if @config.api_submit_action?
+        if @config.api_submit_url?
             $.post(
-                url: '/api/'
+                url: @config.api_submit_url
                 data:
-                    action: @config.api_submit_action
                     data: JSON.stringify(@tabulator.tabulator("getData"))
                 success: (data, textStatus, jqXHR) =>
                     if data != 'success'
