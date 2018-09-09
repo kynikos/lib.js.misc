@@ -9,7 +9,7 @@
     "url": "https://github.com/kynikos/lib.js.misc.git"
   },
   "scripts": {
-    "compile": "coffee --compile --transpile --bare --output ./dist/ ./src/*.coffee"
+    "compile": "./node_modules/.bin/coffee --compile --transpile --bare --output ./dist/ ./src/*.coffee"
   },
   "optionalDependencies": {
     "bootstrap": "^3.3.7",
