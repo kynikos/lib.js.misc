@@ -25,16 +25,12 @@ module.exports.geoMapHref = geoMapHref = function geoMapHref(link) {
   coords = link.getAttribute('data-geomap-coordinates') || "0,0";
   query = link.getAttribute('data-geomap-query') || "";
   if (window.navigator.platform.match(/iPad|iPhone|iPod/i) === null) {
-    // TODO: The "geo:" URI scheme doesn't work on Safari yet
-    link.setAttribute('href', 'geo:' + coords + '?q=' + query);
+    link.setAttribute('href', 'geo:' + coords + '?q=' + (query || coords));
   } else {
-    if (query) {
-      // Yes, apparently putting the coordinates in place
-      // of 0,0 doesn't work...
-      link.setAttribute('href', 'maps:0,0?q=' + query);
-    } else {
-      link.setAttribute('href', 'maps:0,0?q=' + coords);
-    }
+    // TODO: The "geo:" URI scheme doesn't work on Safari yet
+    // Yes, apparently putting the coordinates in place
+    // of 0,0 doesn't work...
+    link.setAttribute('href', 'maps:0,0?q=' + (query || coords));
   }
   return link;
 };
