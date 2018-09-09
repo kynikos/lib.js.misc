@@ -59,15 +59,12 @@ $.fn.geoMapHref = ->
         coords = link.attr('data-geomap-coordinates') ? "0,0"
         query = link.attr('data-geomap-query') ? ""
         if window.navigator.platform.match(/iPad|iPhone|iPod/i) is null
-            link.attr('href', "geo:#{coords}?q=#{query}")
+            link.attr('href', "geo:#{coords}?q=#{query || coords}")
         else
             # TODO: The "geo:" URI scheme doesn't work on Safari yet
-            if query
-                # Yes, apparently putting the coordinates in place
-                # of 0,0 doesn't work...
-                link.attr('href', "maps:0,0?q=#{query}")
-            else
-                link.attr('href', "maps:0,0?q=#{coords}")
+            # Yes, apparently putting the coordinates in place
+            # of 0,0 doesn't work...
+            link.attr('href', "maps:0,0?q=#{query || coords}")
         return link
     )
 
