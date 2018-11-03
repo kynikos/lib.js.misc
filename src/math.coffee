@@ -17,19 +17,19 @@
 # along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
 
 
-format_multiplication = (factor1, factor2, decimals) ->
+formatMultiplication = (factor1, factor2, decimals) ->
     return (factor1 * factor2).toFixed(decimals)
-module.exports.format_multiplication = format_multiplication
+module.exports.formatMultiplication = formatMultiplication
 
 
-module.exports.rounded_multiplication = (factor1, factor2, decimals) ->
-    return parseFloat(format_multiplication(factor1, factor2, decimals))
+module.exports.roundedMultiplication = (factor1, factor2, decimals) ->
+    return parseFloat(formatMultiplication(factor1, factor2, decimals))
 
 
-format_division = (dividend, divisor, decimals) ->
+formatDivision = (dividend, divisor, decimals) ->
     return (dividend / divisor).toFixed(decimals)
-module.exports.format_division = format_division
+module.exports.formatDivision = formatDivision
 
 
-module.exports.rounded_division = (dividend, divisor, decimals) ->
-    return parseFloat(format_division(dividend, divisor, decimals))
+module.exports.roundedDivision = (dividend, divisor, decimals) ->
+    return parseFloat(formatDivision(dividend, divisor, decimals))

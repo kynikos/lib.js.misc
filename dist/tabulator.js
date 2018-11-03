@@ -93,11 +93,11 @@ _number_editor_multiply = function _number_editor_multiply(units, decimals, scal
   return function (cell, value) {
     var factor;
     factor = Math.pow(10, scale);
-    value = math.rounded_multiplication(value, factor, decimals);
+    value = math.roundedMultiplication(value, factor, decimals);
     return _number_editor_input(cell, value, units, decimals, function (inputval) {
       // Add scale to decimals, since the original number may have had
       // more decimal digits than 'decimals'
-      return math.rounded_division(inputval, factor, decimals + scale);
+      return math.roundedDivision(inputval, factor, decimals + scale);
     });
   };
 };
@@ -106,9 +106,9 @@ _number_editor_divide = function _number_editor_divide(units, decimals, scale) {
   return function (cell, value) {
     var divisor;
     divisor = Math.pow(10, scale);
-    value = math.rounded_division(value, divisor, decimals);
+    value = math.roundedDivision(value, divisor, decimals);
     return _number_editor_input(cell, value, units, decimals, function (inputval) {
-      return math.rounded_multiplication(inputval, divisor, decimals);
+      return math.roundedMultiplication(inputval, divisor, decimals);
     });
   };
 };
@@ -160,7 +160,7 @@ module.exports.extjQuery = function ($) {
         return parseInt(value * 1000, 10);
       },
       'integer/1000': function integer1000(value, data, cell, row, options) {
-        return math.format_division(value, 1000, 0);
+        return math.formatDivision(value, 1000, 0);
       },
       'float*1000': function float1000(value, data, cell, row, options) {
         return value * 1000;
@@ -172,10 +172,10 @@ module.exports.extjQuery = function ($) {
         return (value * 1000).toFixed(3);
       },
       'float.3/1000': function float31000(value, data, cell, row, options) {
-        return math.rounded_division(value, 1000, 3);
+        return math.roundedDivision(value, 1000, 3);
       },
       'float.30/1000': function float301000(value, data, cell, row, options) {
-        return math.format_division(value, 1000, 3);
+        return math.formatDivision(value, 1000, 3);
       },
       'money*1000': _money_formatter(1000),
       'money/1000': _money_formatter(1 / 1000)

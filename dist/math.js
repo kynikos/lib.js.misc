@@ -18,24 +18,24 @@
 
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-var format_division, format_multiplication;
+var formatDivision, formatMultiplication;
 
-format_multiplication = function format_multiplication(factor1, factor2, decimals) {
+formatMultiplication = function formatMultiplication(factor1, factor2, decimals) {
   return (factor1 * factor2).toFixed(decimals);
 };
 
-module.exports.format_multiplication = format_multiplication;
+module.exports.formatMultiplication = formatMultiplication;
 
-module.exports.rounded_multiplication = function (factor1, factor2, decimals) {
-  return parseFloat(format_multiplication(factor1, factor2, decimals));
+module.exports.roundedMultiplication = function (factor1, factor2, decimals) {
+  return parseFloat(formatMultiplication(factor1, factor2, decimals));
 };
 
-format_division = function format_division(dividend, divisor, decimals) {
+formatDivision = function formatDivision(dividend, divisor, decimals) {
   return (dividend / divisor).toFixed(decimals);
 };
 
-module.exports.format_division = format_division;
+module.exports.formatDivision = formatDivision;
 
-module.exports.rounded_division = function (dividend, divisor, decimals) {
-  return parseFloat(format_division(dividend, divisor, decimals));
+module.exports.roundedDivision = function (dividend, divisor, decimals) {
+  return parseFloat(formatDivision(dividend, divisor, decimals));
 };
