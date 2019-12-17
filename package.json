@@ -15,6 +15,7 @@
     "bootstrap": "^3.3.7",
     "bootstrap-datepicker": "^1.7.1",
     "bootstrap-table": "^1.11.2",
+    "form-data": "^3.0.0",
     "hyperscript": "^2.0.2",
     "hyperscript-helpers": "^3.0.3",
     "jquery": "^3.3.1",
@@ -23,9 +24,9 @@
     "papaparse": "^4.3.6"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "coffeescript": "^2.1.1"
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "coffeescript": "^2.4.1"
   },
   "babel": {
     "presets": [
