@@ -18,20 +18,22 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 
+function advanceToNextLine(oldLineNo, oldRemainingText) {
+  const nextLineStart = oldRemainingText.indexOf('\n') + 1
+  const newLine = oldRemainingText.slice(0, nextLineStart)
+  const newRemainingText = oldRemainingText.slice(nextLineStart)
+  return [newLine, oldLineNo + 1, newRemainingText]
+}
+
+
 module.exports.iterateMultilineMatches = function *iterateMultilineMatches({
   haystack, startMatch, continueMatch,
 }) {
-  let remainingText = haystack
+  let [line, lineNo, remainingText] = advanceToNextLine(0, haystack)
   let currentMatch = null
   let continueRegExp = null
-  let lineNo = 0
 
   while (remainingText.length > 0) {
-    lineNo++
-    const nextLineBreak = remainingText.indexOf('\n')
-    const line = remainingText.slice(0, nextLineBreak + 1)
-    remainingText = remainingText.slice(nextLineBreak + 1)
-
     if (currentMatch == null) {
       let match
       [match, continueRegExp] = startMatch(line)
@@ -42,6 +44,8 @@ module.exports.iterateMultilineMatches = function *iterateMultilineMatches({
           lines: [match],
         }
       }
+
+      [line, lineNo, remainingText] = advanceToNextLine(lineNo, remainingText)
     } else {
       let match
       [match, continueRegExp] = continueMatch(
@@ -50,8 +54,16 @@ module.exports.iterateMultilineMatches = function *iterateMultilineMatches({
       if (match == null) {
         yield currentMatch
         currentMatch = null
+        // This line could be the start of a new match, so parse it again, i.e.
+        // don't advance to the next line
       } else {
         currentMatch.lines.push(match)
+        // [line, lineNo, remainingText] =
+        //   advanceToNextLine(lineNo, remainingText)
+        const nextLineData = advanceToNextLine(lineNo, remainingText)
+        line = nextLineData[0]
+        lineNo = nextLineData[1]
+        remainingText = nextLineData[2]
       }
     }
   }
