@@ -33,7 +33,7 @@ module.exports.iterateMultilineMatches = function *iterateMultilineMatches({
   let currentMatch = null
   let continueRegExp = null
 
-  while (remainingText.length > 0) {
+  while (line.length > 0) {
     if (currentMatch == null) {
       let match
       [match, continueRegExp] = startMatch(line)
@@ -66,5 +66,9 @@ module.exports.iterateMultilineMatches = function *iterateMultilineMatches({
         remainingText = nextLineData[2]
       }
     }
+  }
+
+  if (currentMatch != null) {
+    yield currentMatch
   }
 }
