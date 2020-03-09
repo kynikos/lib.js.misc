@@ -18,7 +18,7 @@
 
 $ = require('jquery')
 h = require('hyperscript')
-misc = require('./misc')
+datetime = require('./datetime')
 
 
 module.exports.Choice = (options, selected, props) ->
@@ -53,7 +53,7 @@ module.exports.Multichoice = (legend, items, checked, attributes) ->
 class module.exports.WeekDaySelector
     constructor:  (selected_days, baseid, radio=false) ->
         @container = $('<span>').addClass('weekdayselector')
-        for wday, index in misc.WEEKDAYS_SHORT
+        for wday, index in datetime.WEEKDAYS_SHORT
             id = "#{baseid}-#{index}"
             name = "#{baseid}"
             input = $('<input>')
