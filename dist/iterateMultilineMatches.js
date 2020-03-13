@@ -100,8 +100,7 @@ module.exports.iterateMultilineMatches = /*#__PURE__*/regeneratorRuntime.mark(fu
           break;
 
         case 30:
-          currentMatch.lines.push(_match); // TODO: For some reason array spreading doesn't work?!? ################################################
-          // [line, lineNo, remainingText] =
+          currentMatch.lines.push(_match); // [line, lineNo, remainingText] =
           //   advanceToNextLine(lineNo, remainingText)
 
           nextLineData = advanceToNextLine(lineNo, remainingText);

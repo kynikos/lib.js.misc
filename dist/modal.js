@@ -20,7 +20,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-// BUG: For some reason requiring jquery here gives an error? ####################################
 var $;
 $ = require('jquery');
 
