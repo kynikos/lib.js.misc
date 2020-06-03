@@ -26,17 +26,17 @@ function makeCalendar({
 }) {
   if (!sortedDates || !sortedDates.length) return null
 
-  const firstSelectedDate = sortedDates[0]
-  const lastSelectedDate = sortedDates.slice(-1)[0]
+  const firstRangeDate = sortedDates[0]
+  const lastRangeDate = sortedDates.slice(-1)[0]
   const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1
-  const diff1 = firstSelectedDate.day() >= firstDayOfWeek
+  const diff1 = firstRangeDate.day() >= firstDayOfWeek
     ? firstDayOfWeek
     : (firstDayOfWeek - 7)
-  const diff2 = lastSelectedDate.day() <= lastDayOfWeek
+  const diff2 = lastRangeDate.day() <= lastDayOfWeek
     ? lastDayOfWeek
     : (lastDayOfWeek + 7)
-  const firstDate = moment(firstSelectedDate).day(diff1)
-  const lastDate = moment(lastSelectedDate).day(diff2)
+  const firstDate = moment(firstRangeDate).day(diff1)
+  const lastDate = moment(lastRangeDate).day(diff2)
 
   const rows = [[]]
 
@@ -56,7 +56,7 @@ function makeCalendar({
 
     cRow.push({
       date: cDate,
-      isSelected: sortedDates.some((date) => date.isSame(cDate, 'day')),
+      inRange: sortedDates.some((date) => date.isSame(cDate, 'day')),
     })
   }
 
