@@ -25,13 +25,13 @@ function makeCalendar(_ref) {
       _ref$firstDayOfWeek = _ref.firstDayOfWeek,
       firstDayOfWeek = _ref$firstDayOfWeek === void 0 ? 1 : _ref$firstDayOfWeek;
   if (!sortedDates || !sortedDates.length) return null;
-  var firstSelectedDate = sortedDates[0];
-  var lastSelectedDate = sortedDates.slice(-1)[0];
+  var firstRangeDate = sortedDates[0];
+  var lastRangeDate = sortedDates.slice(-1)[0];
   var lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-  var diff1 = firstSelectedDate.day() >= firstDayOfWeek ? firstDayOfWeek : firstDayOfWeek - 7;
-  var diff2 = lastSelectedDate.day() <= lastDayOfWeek ? lastDayOfWeek : lastDayOfWeek + 7;
-  var firstDate = moment(firstSelectedDate).day(diff1);
-  var lastDate = moment(lastSelectedDate).day(diff2);
+  var diff1 = firstRangeDate.day() >= firstDayOfWeek ? firstDayOfWeek : firstDayOfWeek - 7;
+  var diff2 = lastRangeDate.day() <= lastDayOfWeek ? lastDayOfWeek : lastDayOfWeek + 7;
+  var firstDate = moment(firstRangeDate).day(diff1);
+  var lastDate = moment(lastRangeDate).day(diff2);
   var rows = [[]];
 
   var _loop = function _loop(rDate) {
@@ -45,7 +45,7 @@ function makeCalendar(_ref) {
 
     cRow.push({
       date: cDate,
-      isSelected: sortedDates.some(function (date) {
+      inRange: sortedDates.some(function (date) {
         return date.isSame(cDate, 'day');
       })
     });
