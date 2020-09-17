@@ -22,7 +22,7 @@
     "jquery-ui-browserify": "^1.11.0-pre-seelio",
     "jquery.tabulator": "<3.0.0",
     "moment": "^2.24.0",
-    "papaparse": "^4.3.6",
+    "papaparse": "^5.2.0",
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
