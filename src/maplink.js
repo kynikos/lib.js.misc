@@ -1,11 +1,3 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.geoMapHref = geoMapHref;
-exports.extjQuery = extjQuery;
-
 // lib.cs.misc - Check the status of code repositories under a root directory.
 // Copyright (C) 2016 Dario Giovannetti <dev@dariogiovannetti.net>
 //
@@ -23,26 +15,27 @@ exports.extjQuery = extjQuery;
 //
 // You should have received a copy of the GNU General Public License
 // along with lib.cs.misc.  If not, see <http://www.gnu.org/licenses/>.
-function geoMapHref(link) {
-  var coords = link.getAttribute('data-geomap-coordinates') || '0,0';
-  var query = link.getAttribute('data-geomap-query') || '';
 
+
+export function geoMapHref(link) {
+  const coords = link.getAttribute('data-geomap-coordinates') || '0,0'
+  const query = link.getAttribute('data-geomap-query') || ''
   if (window.navigator.platform.match(/iPad|iPhone|iPod/i) === null) {
-    link.setAttribute('href', "geo:".concat(coords, "?q=").concat(query || coords));
+    link.setAttribute('href', `geo:${coords}?q=${query || coords}`)
   } else {
     // TODO: The "geo:" URI scheme doesn't work on Safari yet
     // Yes, apparently putting the coordinates in place
     // of 0,0 doesn't work...
-    link.setAttribute('href', "maps:0,0?q=".concat(query || coords));
+    link.setAttribute('href', `maps:0,0?q=${query || coords}`)
   }
-
-  return link;
+  return link
 }
 
-function extjQuery($) {
+
+export function extjQuery($) {
   $.fn.geoMapHref = function () {
     return this.each(function () {
-      return $(geoMapHref(this));
-    });
-  };
+      return $(geoMapHref(this))
+    })
+  }
 }
