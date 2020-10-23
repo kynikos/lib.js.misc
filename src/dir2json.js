@@ -18,8 +18,8 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /* eslint-disable no-sync */
-import {spawnSync} from 'child_process'
-import moment from 'moment'
+const {spawnSync} = require('child_process')
+const moment = require('moment')
 
 
 function dir(root) {
@@ -57,7 +57,7 @@ function matchStat(line) {
 }
 
 
-export function dir2Json({root, indent}) {
+exports.dir2Json = function dir2Json({root, indent}) {
   const lines = dir(root)
   const json = {commandStart: moment().toISOString()}
 

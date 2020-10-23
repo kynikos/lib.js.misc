@@ -18,7 +18,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /* eslint-disable no-sync */
-import {spawnSync} from 'child_process'
+const {spawnSync} = require('child_process')
 
 
 function tree(root) {
@@ -56,7 +56,7 @@ function matchLastSubDirectoryEnd(lineEnd) {
 }
 
 
-export function tree2Json({root}) {
+exports.tree2Json = function tree2Json({root}) {
   const lines = tree(root)
   const json = {}
 

@@ -18,7 +18,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /* eslint-disable no-sync */
-import {spawnSync} from 'child_process'
+const {spawnSync} = require('child_process')
 
 
 function dirBare(root, directories = false) {
@@ -29,7 +29,7 @@ function dirBare(root, directories = false) {
 }
 
 
-export function dirbare2Json({root}) {
+exports.dirbare2Json = function dirbare2Json({root}) {
   const directories = dirBare(root, true)
   const files = dirBare(root, false)
 

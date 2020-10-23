@@ -18,8 +18,8 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /* eslint-disable no-sync */
-import fs from 'fs'
-import path from 'path'
+const fs = require('fs')
+const path = require('path')
 
 
 function walk(directory) {
@@ -36,6 +36,6 @@ function walk(directory) {
 }
 
 
-export function walk2Json({root}) {
+exports.walk2Json = function walk2Json({root}) {
   console.log(walk(root))
 }
