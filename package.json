@@ -15,6 +15,7 @@
     "bootstrap": "^3.3.7",
     "bootstrap-datepicker": "^1.7.1",
     "bootstrap-table": "^1.11.2",
+    "busboy": "^0.3.1",
     "form-data": "^3.0.0",
     "hyperscript": "^2.0.2",
     "hyperscript-helpers": "^3.0.3",
@@ -26,11 +27,11 @@
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3",
-    "@babel/preset-env": "^7.12.1",
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/preset-env": "^7.12.7",
     "coffeescript": "^2.5.1",
-    "eslint": "^7.12.1"
+    "eslint": "^7.14.0"
   },
   "babel": {
     "presets": [
