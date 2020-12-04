@@ -40,43 +40,47 @@ exports.streamToGenerator = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            stream.on('error', function (error) {
-              throw error;
-            });
+            throw new Error('Not implemented');
 
-          case 1:
+          case 2:
             if (!true) {
-              _context.next = 12;
+              _context.next = 13;
               break;
             }
 
-            _context.prev = 2;
-            _context.next = 5;
+            _context.prev = 3;
+            _context.next = 6;
             return new Promise(function (resolve, reject) {
-              stream.once('data', resolve);
+              stream.once('data', function (data) {
+                // If I don't remove the 'end' and 'error' listeners, Node will raise
+                // MaxListenersExceededWarning
+                stream.off('end', reject);
+                stream.off('error', reject);
+                resolve(data);
+              });
               stream.once('end', reject);
               stream.once('error', reject);
             });
 
-          case 5:
-            _context.next = 10;
+          case 6:
+            _context.next = 11;
             break;
 
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](2);
-            return _context.abrupt("break", 12);
+          case 8:
+            _context.prev = 8;
+            _context.t0 = _context["catch"](3);
+            return _context.abrupt("break", 13);
 
-          case 10:
-            _context.next = 1;
+          case 11:
+            _context.next = 2;
             break;
 
-          case 12:
+          case 13:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[2, 7]]);
+    }, _callee, null, [[3, 8]]);
   }));
 
   function streamToGenerator(_x) {

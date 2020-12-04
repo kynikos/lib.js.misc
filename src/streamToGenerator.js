@@ -19,6 +19,10 @@
 
 
 exports.streamToGenerator = async function *streamToGenerator(stream) {
+  // BUG: This implementation does not listen to all 'data' events, i.e. an
+  //      amount of data is always lost
+  throw new Error('Not implemented')
+
   stream.on('error', (error) => {
     throw error
   })
@@ -27,7 +31,13 @@ exports.streamToGenerator = async function *streamToGenerator(stream) {
     try {
       // eslint-disable-next-line no-await-in-loop
       yield await new Promise((resolve, reject) => {
-        stream.once('data', resolve)
+        stream.once('data', (data) => {
+          // If I don't remove the 'end' and 'error' listeners, Node will raise
+          // MaxListenersExceededWarning
+          stream.off('end', reject)
+          stream.off('error', reject)
+          resolve(data)
+        })
         stream.once('end', reject)
         stream.once('error', reject)
       })
