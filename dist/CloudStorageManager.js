@@ -61,7 +61,7 @@ function Bucket(cStorage, name) {
   var csBucket = cStorage.bucket(name);
   return {
     name: name,
-    listDir: function listDir(directory) {
+    listDir: function listDir(prefix) {
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         var _yield$csBucket$getFi, _yield$csBucket$getFi2, files;
 
@@ -71,7 +71,7 @@ function Bucket(cStorage, name) {
               case 0:
                 _context.next = 2;
                 return csBucket.getFiles({
-                  directory: directory
+                  prefix: prefix
                 });
 
               case 2:
