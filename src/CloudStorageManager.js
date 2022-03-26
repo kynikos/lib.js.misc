@@ -46,6 +46,7 @@ function Bucket(cStorage, name) {
 
   return {
     name,
+    csBucket,
     async listDir(prefix) {
       const [files] = await csBucket.getFiles({prefix})
       return files.map((file) => file.metadata.name)
