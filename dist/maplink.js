@@ -3,8 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.geoMapHref = geoMapHref;
 exports.extjQuery = extjQuery;
+exports.geoMapHref = geoMapHref;
 
 // lib.cs.misc - Check the status of code repositories under a root directory.
 // Copyright (C) 2016 Dario Giovannetti <dev@dariogiovannetti.net>

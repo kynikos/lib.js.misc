@@ -3,11 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.argv = exports.addListener = void 0;
 exports.binding = binding;
-exports.cwd = cwd;
+exports.browser = void 0;
 exports.chdir = chdir;
+exports.cwd = cwd;
+exports.title = exports.stdout = exports.removeListener = exports.removeAllListeners = exports.once = exports.on = exports.off = exports.env = exports.emit = void 0;
 exports.umask = umask;
-exports.stdout = exports.env = exports.emit = exports.removeAllListeners = exports.removeListener = exports.off = exports.once = exports.addListener = exports.on = exports.versions = exports.version = exports.argv = exports.browser = exports.title = void 0;
+exports.versions = exports.version = void 0;
 // JavaScript auxiliary library
 // Copyright (C) 2012 Dario Giovannetti <dev@dariogiovannetti.net>
 //
