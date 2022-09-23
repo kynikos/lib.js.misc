@@ -47,33 +47,18 @@ function Bucket(cStorage, name) {
   return {
     name,
     csBucket,
-    async listDir(prefix) {
-      const [files] = await csBucket.getFiles({prefix})
-      return files.map((file) => file.metadata.name)
-    },
     async readFile(filePath) {
-      const file = csBucket.file(filePath)
+      const fileRef = csBucket.file(filePath)
 
-      const [contentType, buffer] = await Promise.all([
-        file.getMetadata().then(([metadata]) => {
-          return metadata.contentType
-        }),
-        new Promise((resolve, reject) => {
-          const fileStream = file.createReadStream()
-
-          const fileChunks = []
-
-          fileStream.on('data', (chunk) => {
-            fileChunks.push(chunk)
-          })
-          fileStream.on('error', reject)
-          fileStream.on('end', () => {
-            resolve(Buffer.concat(fileChunks))
-          })
-        }),
+      const [[metadata], [buffer]] = await Promise.all([
+        fileRef.getMetadata(),
+        fileRef.download(),
       ])
 
-      return {contentType, buffer}
+      return {
+        buffer,
+        contentType: metadata.contentType,
+      }
     },
     async uploadFiles(
       files,
@@ -161,17 +146,9 @@ function Bucket(cStorage, name) {
         if (validateOnly) return true
 
         const doUpload = () => {
-          const writable = csFile.createWriteStream(
-            // TODO: Allow explicitly setting the content type, and maybe also
-            //       other metadata
-            // {metadata: {contentType}}
-          )
-
-          return new Promise((resolve, reject) => {
-            writable.on('finish', resolve)
-            writable.on('error', reject)
-            writable.end(fileBuffer)
-          })
+          // TODO: Allow explicitly setting the content type, and maybe also
+          //       other metadata
+          return csFile.save(fileBuffer)
         }
 
         return allOrNothing ? doUpload : doUpload()
